@@ -1,6 +1,6 @@
 from typing import Any, Dict, Generic, TypeVar, List, Optional
 
-from wsgi.di.service_provider import ServiceProvider
+from wsgi.di.provider.service_provider import ServiceProvider
 
 T = TypeVar("T")
 

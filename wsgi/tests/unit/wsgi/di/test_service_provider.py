@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from wsgi.di.service_provider import ServiceProvider
+from wsgi.di.provider.service_provider import ServiceProvider
 
 
 class TestServiceProvider(TestCase):

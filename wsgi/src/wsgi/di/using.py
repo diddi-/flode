@@ -1,7 +1,8 @@
 from typing import TypeVar, Generic, Type, Callable, Dict, Any, Optional
 
+from wsgi.di.provider.lifetime import Lifetime
 from wsgi.di.provider.singleton_provider import SingletonProvider
-from wsgi.di.service_provider import ServiceProvider
+from wsgi.di.provider.service_provider import ServiceProvider
 
 T = TypeVar("T")
 
@@ -11,10 +12,9 @@ class Using(Generic[T]):
         self._type = typ
         self._callback = callback
 
-    def using(self, cls: Type[T], kwargs: Optional[Dict[Any, Any]] = None) -> None:
-        provider = ServiceProvider[T](self._type, cls, kwargs)
-        self._callback(provider)
-
-    def using_singleton(self, cls: Type[T], kwargs: Optional[Dict[Any, Any]] = None) -> None:
-        provider = SingletonProvider[T](self._type, cls, kwargs)
+    def using(self, cls: Type[T], lifetime: Lifetime = Lifetime.NONE, kwargs: Optional[Dict[Any, Any]] = None) -> None:
+        if lifetime.is_singleton():
+            provider = SingletonProvider[T](self._type, cls, kwargs)
+        else:
+            provider = ServiceProvider[T](self._type, cls, kwargs)
         self._callback(provider)

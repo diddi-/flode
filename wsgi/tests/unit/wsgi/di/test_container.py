@@ -3,6 +3,7 @@ from unittest import TestCase
 from wsgi.di.container import Container
 from wsgi.di.exceptions.missing_dependency_exception import MissingDependencyException
 from wsgi.di.exceptions.service_not_configured_exception import ServiceNotConfiguredException
+from wsgi.di.provider.lifetime import Lifetime
 
 
 class TestContainer(TestCase):
@@ -44,7 +45,7 @@ class TestContainer(TestCase):
 
         expected_name = "custom_name"
         container = Container()
-        container.add_service(Service).using(Service, {"name": expected_name})
+        container.add_service(Service).using(Service, kwargs={"name": expected_name})
 
         instance = container.get_service(Service)
         self.assertIsInstance(instance, Service)
@@ -54,7 +55,7 @@ class TestContainer(TestCase):
         class MySingleton: pass
 
         container = Container()
-        container.add_service(MySingleton).using_singleton(MySingleton)
+        container.add_service(MySingleton).using(MySingleton, Lifetime.SINGLETON)
 
         instance1 = container.get_service(MySingleton)
         instance2 = container.get_service(MySingleton)

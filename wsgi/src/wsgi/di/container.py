@@ -1,9 +1,10 @@
-from inspect import signature, Parameter
-from typing import TypeVar, Dict, Type, cast, Any, Callable, ParamSpec, List
+from inspect import signature
+from typing import TypeVar, Dict, Type, cast, Any, Callable, ParamSpec
 
 from wsgi.di.exceptions.missing_dependency_exception import MissingDependencyException
 from wsgi.di.exceptions.service_not_configured_exception import ServiceNotConfiguredException
-from wsgi.di.service_provider import ServiceProvider
+from wsgi.di.provider.lifetime import Lifetime
+from wsgi.di.provider.service_provider import ServiceProvider
 from wsgi.di.using import Using
 
 T = TypeVar("T")
@@ -17,7 +18,7 @@ class Container:
     # time.
     _providers: Dict[Any, ServiceProvider[Any]] = {}
     def __init__(self) -> None:
-        self.add_service(Container).using(Container)
+        self.add_service(Container).using(Container, Lifetime.SINGLETON)
 
     def _provider_callback(self, provider: ServiceProvider[Any]) -> None:
         self._providers[provider.provides_type] = provider
