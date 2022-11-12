@@ -32,10 +32,10 @@ class TestServiceProvider(TestCase):
         provider = ServiceProvider[MyService](MyService, MyService)
         params = provider.get_parameters()
 
-        self.assertEqual(4, len(params))  # Including 'self'
-        name_param = params[1]
-        amount_param = params[2]
-        dependency_param = params[3]
+        self.assertEqual(3, len(params))
+        name_param = params[0]
+        amount_param = params[1]
+        dependency_param = params[2]
         self.assertEqual("name", name_param.name)
         self.assertEqual(str, name_param.annotation)
         self.assertEqual("amount", amount_param.name)

@@ -27,11 +27,15 @@ class ServiceProvider(Generic[T], ABC):
         return len(self._custom_kwargs) > 0
 
     def get_parameters(self) -> List[Parameter]:
-        params: List[Parameter] = []
         sig = signature(self._cls.__init__)
-        for param_name, param in sig.parameters.items():
-            params.append(param)
+        params: List[Parameter] = []
 
+        for param_name, param in sig.parameters.items():
+            # For the time being we skip *args and **kwargs. May have to change.
+            if param.kind not in (param.VAR_POSITIONAL, param.VAR_KEYWORD):
+                params.append(param)
+
+        params.pop(0)  # Remove 'self' parameter as it should not be passed to the constructor
         return params
 
     def instantiate(self, args: List[Any], kwargs: Dict[str, Any]) -> T:
