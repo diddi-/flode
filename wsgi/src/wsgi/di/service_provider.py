@@ -1,6 +1,6 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 from inspect import signature, Parameter
-from typing import Generic, TypeVar, Type, Dict, Any, Optional, List, Tuple
+from typing import Generic, TypeVar, Type, Dict, Any, Optional, List
 
 T = TypeVar("T")
 
@@ -34,8 +34,7 @@ class ServiceProvider(Generic[T], ABC):
 
         return params
 
-    @abstractmethod
     def instantiate(self, args: List[Any], kwargs: Dict[str, Any]) -> T:
         """ This will instantiate the service. Do not call this directly, it is only intended to be used
         by the DI container. """
-        raise NotImplementedError()
+        return self.provider(*args, **kwargs)
