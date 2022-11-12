@@ -18,7 +18,7 @@ class Container:
     # time.
     _providers: Dict[Any, ServiceProvider[Any]] = {}
     def __init__(self) -> None:
-        self.add_service(Container).using(Container, Lifetime.SINGLETON)
+        self.add_service(Container).using_instance(self)
 
     def _provider_callback(self, provider: ServiceProvider[Any]) -> None:
         self._providers[provider.provides_type] = provider
