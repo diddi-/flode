@@ -16,7 +16,7 @@ class TestContainer(TestCase):
         container.add_service(HttpClient).using(HttpClient)
         container.add_service(Service).using(Service)
 
-        instance = container.resolve(Service)
+        instance = container.get_instance(Service)
         self.assertIsInstance(instance, Service)
         self.assertIsInstance(instance.http, HttpClient)
 
@@ -29,7 +29,7 @@ class TestContainer(TestCase):
         container = Container()
         container.add_service(Service).using(Service, {"name": expected_name})
 
-        instance = container.resolve(Service)
+        instance = container.get_instance(Service)
         self.assertIsInstance(instance, Service)
         self.assertEqual(expected_name, instance.name)
 
@@ -39,6 +39,20 @@ class TestContainer(TestCase):
         container = Container()
         container.add_service(MySingleton).using_singleton(MySingleton)
 
-        instance1 = container.resolve(MySingleton)
-        instance2 = container.resolve(MySingleton)
+        instance1 = container.get_instance(MySingleton)
+        instance2 = container.get_instance(MySingleton)
         self.assertEqual(instance1, instance2)
+
+    def test_method_arguments_can_be_resolved(self) -> None:
+        class Dependency: pass
+        class Service:
+            def do_work(self, dep: Dependency) -> Dependency:
+                return dep
+
+        container = Container()
+        container.add_service(Dependency).using(Dependency)
+        container.add_service(Service).using(Service)
+        instance = container.get_instance(Service)
+
+        dependency = container.invoke(instance.do_work)
+        self.assertIsInstance(dependency, Dependency)
