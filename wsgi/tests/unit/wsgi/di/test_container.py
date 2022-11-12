@@ -13,10 +13,10 @@ class TestContainer(TestCase):
                 self.http = http
 
         container = Container()
-        container.resolve(HttpClient).using(HttpClient)
-        container.resolve(Service).using(Service)
+        container.add_service(HttpClient).using(HttpClient)
+        container.add_service(Service).using(Service)
 
-        instance = container.get_instance(Service)
+        instance = container.resolve(Service)
         self.assertIsInstance(instance, Service)
         self.assertIsInstance(instance.http, HttpClient)
 
@@ -27,8 +27,18 @@ class TestContainer(TestCase):
 
         expected_name = "custom_name"
         container = Container()
-        container.resolve(Service).using(Service, {"name": expected_name})
+        container.add_service(Service).using(Service, {"name": expected_name})
 
-        instance = container.get_instance(Service)
+        instance = container.resolve(Service)
         self.assertIsInstance(instance, Service)
         self.assertEqual(expected_name, instance.name)
+
+    def test_singleton_instances_can_be_added(self) -> None:
+        class MySingleton: pass
+
+        container = Container()
+        container.add_service(MySingleton).using_singleton(MySingleton)
+
+        instance1 = container.resolve(MySingleton)
+        instance2 = container.resolve(MySingleton)
+        self.assertEqual(instance1, instance2)
