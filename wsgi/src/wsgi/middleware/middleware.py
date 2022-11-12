@@ -5,7 +5,7 @@ from wsgi.http_context import HttpContext
 
 class Middleware:
     """ Middleware base class. Subclasses that inherit from Middleware should implement the handle_request() method. """
-    def __init__(self):
+    def __init__(self) -> None:
         self.next_middleware: Optional[Middleware] = None
 
     def handle_request(self, context: HttpContext) -> None:

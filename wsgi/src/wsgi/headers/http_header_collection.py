@@ -4,7 +4,7 @@ from wsgi.headers.http_header import HttpHeader
 
 
 class HttpHeaderCollection:
-    def __init__(self):
+    def __init__(self) -> None:
         self._headers: List[HttpHeader] = []
 
     def add(self, header: HttpHeader) -> None:

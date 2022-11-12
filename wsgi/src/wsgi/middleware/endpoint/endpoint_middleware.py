@@ -1,16 +1,20 @@
+from typing import cast
+
+from wsgi.controller.controller_result import ControllerResult
 from wsgi.http_context import HttpContext
 from wsgi.middleware.middleware import Middleware
 
 
 class EndpointMiddleware(Middleware):
-    def __init__(self):
-        super().__init__()
-
     def handle_request(self, context: HttpContext) -> None:
         endpoint = context.get_endpoint()
-        controller = endpoint.controller(context.request)
+        controller = endpoint.controller()
+        controller.request = context.request
         method = getattr(controller, endpoint.method_name)
-        body = method()
-        context.response.body = body
+
+        # NOTE: This needs better checking of the return type at runtime but also ensure static typing works.
+        result = cast(ControllerResult, method())
+        context.response.body = result.content
+        context.response.status = result.status
         # This middleware *should* be last but we want to play nice just in case.
         self.next(context)

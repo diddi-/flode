@@ -3,7 +3,7 @@ from wsgi.http_status import HttpStatus
 
 
 class HttpResponse:
-    def __init__(self):
+    def __init__(self) -> None:
         self.status: HttpStatus = HttpStatus.OK
         self.body: str = ""
         self.headers = HttpHeaderCollection()

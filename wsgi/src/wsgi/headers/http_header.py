@@ -1,6 +1,3 @@
-from typing import Iterable
-
-
 class HttpHeader:
     def __init__(self, name: str, value: str):
         self.name = name

@@ -3,11 +3,11 @@ requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "avion-wsgi"
+name = "wsgi"
 version = "0.0.1"
 authors = [{ name="Diddi Oskarsson", email="diddi@diddi.se" }]
-description = "Avion Virtual Airline Manager WSGI"
-requires-python = ">=3.8"
+description = "WSGI"
+requires-python = ">=3.10"
 dependencies = [
 ]
 classifiers = [
@@ -21,4 +21,5 @@ test = [
     "pytest",
     "mockito",
     "pylint>=2.15.4",
+    "mypy"
 ]

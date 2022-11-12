@@ -6,7 +6,7 @@ from wsgi.middleware.middleware import Middleware
 
 
 class TestMiddleware(TestCase):
-    def test_handle_request_calls_next_middleware(self):
+    def test_handle_request_calls_next_middleware(self) -> None:
         base_middleware = Middleware()
         next_middleware = mock()
         http_context = mock()

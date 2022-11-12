@@ -1,5 +1,5 @@
 import inspect
-from typing import Dict, Type
+from typing import Dict, Type, List
 
 from wsgi.controller.controller import Controller
 from wsgi.http_context import HttpContext
@@ -10,7 +10,7 @@ from wsgi.route_template import RouteTemplate
 
 
 class Router(Middleware):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self._endpoints: Dict[RouteTemplate, Endpoint] = {}
 
@@ -29,3 +29,6 @@ class Router(Middleware):
             if inspect.isfunction(member) and hasattr(member, "path"):
                 full_path = controller_path + getattr(member, "path")
                 self._endpoints[full_path] = Endpoint(controller, name)
+
+    def get_routes(self) -> List[RouteTemplate]:
+        return list(self._endpoints.keys())
