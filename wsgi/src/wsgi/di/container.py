@@ -43,11 +43,9 @@ class Container:
                              f" implementing class for '{service.__qualname__}' in strict mode")
 
         if lifetime.is_singleton():
-            provider = SingletonProvider[T](service, implementing_class)
+            self._providers[service] = SingletonProvider[T](service, implementing_class)
         else:
-            provider = ServiceProvider[T](service, implementing_class)
-
-        self._providers[provider.provides_type] = provider
+            self._providers[service] = ServiceProvider[T](service, implementing_class)
 
     def has_service(self, typ: Type[T]) -> bool:
         return typ in self._providers

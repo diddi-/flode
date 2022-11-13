@@ -8,10 +8,10 @@ class HttpStatus(Enum):
     INTERNAL_SERVER_ERROR = (500, "INTERNAL SERVER ERROR")
 
     def __str__(self) -> str:
-        return self.value[1]
+        return str(self.value[1])
 
     def __int__(self) -> int:
-        return self.value[0]
+        return int(self.value[0])
 
     @property
     def code(self) -> int:
@@ -24,5 +24,5 @@ class HttpStatus(Enum):
     def to_wsgi_string(self) -> str:
         return f"{self.code} {self.reason}"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<HttpStatus.{self.name}: {self.to_wsgi_string()}>"

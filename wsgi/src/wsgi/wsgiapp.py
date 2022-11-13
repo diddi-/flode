@@ -13,7 +13,7 @@ T = TypeVar("T")
 
 
 class WsgiApplication:
-    def __init__(self, first_middleware: Middleware) -> None:
+    def __init__(self, first_middleware: Middleware[T]) -> None:
         # All middlewares are chained by AppBuilder, so we only need to track the first one
         self._first_middleware = first_middleware
         self.container = Container()

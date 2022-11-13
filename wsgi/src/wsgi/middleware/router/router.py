@@ -12,7 +12,7 @@ from wsgi.route_template import RouteTemplate
 
 
 class Router(Middleware[RouterOptions]):
-    OPTS: RouterOptions = RouterOptions
+    _OPTS = RouterOptions
 
     def __init__(self, options: RouterOptions) -> None:
         super().__init__()

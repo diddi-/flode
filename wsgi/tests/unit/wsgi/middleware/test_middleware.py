@@ -3,11 +3,12 @@ from unittest import TestCase
 from mockito import mock, verify
 
 from wsgi.middleware.middleware import Middleware
+from wsgi.middleware.no_options import NoOptions
 
 
 class TestMiddleware(TestCase):
     def test_handle_request_calls_next_middleware(self) -> None:
-        base_middleware = Middleware()
+        base_middleware = Middleware[NoOptions]()
         next_middleware = mock()
         http_context = mock()
         base_middleware.next_middleware = next_middleware

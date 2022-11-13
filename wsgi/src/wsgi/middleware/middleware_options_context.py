@@ -1,4 +1,5 @@
-from typing import Generic, TypeVar
+from types import TracebackType
+from typing import Generic, TypeVar, Optional, Type
 
 T = TypeVar("T")
 
@@ -9,5 +10,6 @@ class MiddlewareOptionsContext(Generic[T]):
     def __enter__(self) -> T:
         return self.opts
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type: Optional[Type[BaseException]], exc_val: Optional[BaseException],
+                 exc_tb: Optional[TracebackType]) -> None:
         pass

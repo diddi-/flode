@@ -3,9 +3,10 @@ from typing import cast
 from wsgi.controller.controller_result import ControllerResult
 from wsgi.http_context import HttpContext
 from wsgi.middleware.middleware import Middleware
+from wsgi.middleware.no_options import NoOptions
 
 
-class EndpointMiddleware(Middleware):
+class EndpointMiddleware(Middleware[NoOptions]):
     def handle_request(self, context: HttpContext) -> None:
         endpoint = context.get_endpoint()
         controller = endpoint.controller()

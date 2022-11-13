@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional, Type, TypeVar, List
+from typing import Optional, Type, TypeVar, List, Any
 
 from wsgi.di.container import Container
 from wsgi.di.provider.lifetime import Lifetime
@@ -13,9 +13,9 @@ T = TypeVar("T")
 
 
 class AppBuilder:
-    def __init__(self):
+    def __init__(self) -> None:
         self._container = Container()
-        self._middlewares: List[Type[Middleware]] = []
+        self._middlewares: List[Type[Middleware[Any]]] = []
 
     def add_middleware(self, middleware: Type[Middleware[T]], _opts: Optional[Type[T]] = None) \
             -> MiddlewareOptionsContext[T]:
@@ -23,7 +23,7 @@ class AppBuilder:
         # options type from a generic base class: https://youtrack.jetbrains.com/issue/PY-53082
         self._middlewares.append(middleware)
         self._container.add_service(middleware).using(middleware, Lifetime.SINGLETON)
-        middleware_options = middleware.OPTS()
+        middleware_options = middleware.get_options()
         self._container.add_service(type(middleware_options)).using_instance(middleware_options)
         return MiddlewareOptionsContext[T](middleware_options)
 

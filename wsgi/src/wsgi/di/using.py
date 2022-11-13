@@ -15,10 +15,9 @@ class Using(Generic[T]):
 
     def using(self, cls: Type[T], lifetime: Lifetime = Lifetime.NONE, kwargs: Optional[Dict[Any, Any]] = None) -> None:
         if lifetime.is_singleton():
-            provider = SingletonProvider[T](self._type, cls, kwargs)
+            self._callback(SingletonProvider[T](self._type, cls, kwargs))
         else:
-            provider = ServiceProvider[T](self._type, cls, kwargs)
-        self._callback(provider)
+            self._callback(ServiceProvider[T](self._type, cls, kwargs))
 
     def using_instance(self, instance: T) -> None:
         """ Use an already instantiated instance of a service. The lifetime is always Singleton. """
