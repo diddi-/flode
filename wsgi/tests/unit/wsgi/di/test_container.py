@@ -137,7 +137,7 @@ class TestContainer(TestCase):
             container.invoke(do_work)
 
         self.assertRegex(str(err.exception),
-                         r"Parameter 'dep: .*\.Dependency' could not be resolved for '.*\.do_work'")
+                         r"Parameter '_dep: .*\.Dependency' could not be resolved for '.*\.do_work'")
 
     def test_implementing_class_must_be_of_same_type_as_service_when_in_strict_mode(self) -> None:
         class Service: pass
