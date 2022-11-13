@@ -16,17 +16,17 @@ class TestRouter(TestCase):
     def test_get_routes_return_list_of_added_routes(self) -> None:
         class FirstController(Controller):
             @Route()
-            def first_endpoint(self) -> ControllerResult: pass
+            def first_endpoint(self) -> ControllerResult: return ControllerResult("")
 
             @Route("/nested")
-            def second_endpoint(self) -> ControllerResult: pass
+            def second_endpoint(self) -> ControllerResult: return ControllerResult("")
 
         class SecondController(Controller):
             @Route()
-            def first_endpoint(self) -> ControllerResult: pass
+            def first_endpoint(self) -> ControllerResult: return ControllerResult("")
 
             @Route("/nested")
-            def second_endpoint(self) -> ControllerResult: pass
+            def second_endpoint(self) -> ControllerResult: return ControllerResult("")
 
         opts = RouterOptions()
         opts.add_controller("/first", FirstController)
@@ -46,7 +46,7 @@ class TestRouter(TestCase):
     def test_endpoint_is_set_on_context_when_matching_request_path(self) -> None:
         class MyController(Controller):
             @Route()
-            def my_method(self) -> ControllerResult: pass
+            def my_method(self) -> ControllerResult: return ControllerResult("")
 
         opts = RouterOptions()
         opts.add_controller("/test", MyController)

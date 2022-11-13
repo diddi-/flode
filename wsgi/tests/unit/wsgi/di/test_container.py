@@ -4,6 +4,7 @@ from wsgi.di.container import Container
 from wsgi.di.exceptions.missing_dependency_exception import MissingDependencyException
 from wsgi.di.exceptions.service_not_configured_exception import ServiceNotConfiguredException
 from wsgi.di.provider.lifetime import Lifetime
+from wsgi.di.type_check import TypeCheck
 
 
 class TestContainer(TestCase):
@@ -137,3 +138,37 @@ class TestContainer(TestCase):
 
         self.assertRegex(str(err.exception),
                          r"Parameter 'dep: .*\.Dependency' could not be resolved for '.*\.do_work'")
+
+    def test_implementing_class_must_be_of_same_type_as_service_when_in_strict_mode(self) -> None:
+        class Service: pass
+        class NotConcrete: pass
+
+        container = Container()
+        with self.assertRaises(ValueError) as err:
+            container.register(Service, NotConcrete)
+        self.assertRegex(str(err.exception), r"'.*\.NotConcrete' can't be registered")
+
+    def test_implementing_class_does_not_have_to_be_same_type_as_service_when_in_strict_mode(self) -> None:
+        class Service: pass
+        class NotConcrete: pass
+
+        container = Container()
+        container.register(Service, NotConcrete, type_check=TypeCheck.LOOSE)
+        self.assertTrue(container.has_service(Service))
+        self.assertIsInstance(container.get_service(Service), NotConcrete)
+
+    def test_service_can_be_registered_by_service_type_only(self) -> None:
+        class Service: pass
+        container = Container()
+        container.register(Service)
+
+        self.assertTrue(container.has_service(Service))
+
+    def test_service_can_be_registered_with_concrete_class(self) -> None:
+        class Service: pass
+        class Concrete(Service): pass
+
+        container = Container()
+        container.register(Service, Concrete)
+
+        self.assertTrue(container.has_service(Service))

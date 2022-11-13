@@ -1,10 +1,12 @@
 from inspect import signature
-from typing import TypeVar, Dict, Type, cast, Any, Callable, ParamSpec
+from typing import TypeVar, Dict, Type, cast, Any, Callable, ParamSpec, Optional
 
 from wsgi.di.exceptions.missing_dependency_exception import MissingDependencyException
 from wsgi.di.exceptions.service_not_configured_exception import ServiceNotConfiguredException
 from wsgi.di.provider.lifetime import Lifetime
 from wsgi.di.provider.service_provider import ServiceProvider
+from wsgi.di.provider.singleton_provider import SingletonProvider
+from wsgi.di.type_check import TypeCheck
 from wsgi.di.using import Using
 
 T = TypeVar("T")
@@ -30,6 +32,22 @@ class Container:
         # two types can be passed and still be valid by the typing system. This is different for return values however,
         # so add_service(Type[T]) -> Using[T] will bind the two types to be exactly the same.
         return Using[T](typ, self._provider_callback)
+
+    def register(self, service: Type[T], concrete: Optional[Type[T]] = None, lifetime: Lifetime = Lifetime.NONE,
+                 type_check: TypeCheck = TypeCheck.STRICT) -> None:
+        # If not concrete is set to anything, assume service is also the concrete type
+        implementing_class = concrete if concrete else service
+
+        if type_check.is_strict() and service not in implementing_class.mro():
+            raise ValueError(f"'{implementing_class.__qualname__}' can't be registered as the"
+                             f" implementing class for '{service.__qualname__}' in strict mode")
+
+        if lifetime.is_singleton():
+            provider = SingletonProvider[T](service, implementing_class)
+        else:
+            provider = ServiceProvider[T](service, implementing_class)
+
+        self._providers[provider.provides_type] = provider
 
     def has_service(self, typ: Type[T]) -> bool:
         return typ in self._providers
