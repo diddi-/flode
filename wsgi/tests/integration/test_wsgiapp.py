@@ -1,8 +1,8 @@
 from unittest import TestCase
 
 from wsgi.app_builder import AppBuilder
-from wsgi.controller.controller import Controller
-from wsgi.controller.controller_result import ControllerResult
+from wsgi.endpoint.controller import Controller
+from wsgi.endpoint.endpoint_result import EndpointResult
 from wsgi.http_status import HttpStatus
 from wsgi.middleware.router.route import Route
 from wsgi.middleware.router.router import Router
@@ -14,8 +14,8 @@ class TestWsgiApp(TestCase):
     def test_add_middleware_with_context_manager(self) -> None:
         class StatusController(Controller):
             @Route()
-            def default_status(self) -> ControllerResult:
-                return ControllerResult("It works!")
+            def default_status(self) -> EndpointResult:
+                return EndpointResult("It works!")
 
         builder = AppBuilder()
         with builder.add_middleware(Router, RouterOptions) as opts:
@@ -29,11 +29,11 @@ class TestWsgiApp(TestCase):
     def test_controller_with_nested_paths(self) -> None:
         class StatusController(Controller):
             @Route()
-            def default_status(self) -> ControllerResult:
-                return ControllerResult("default")
+            def default_status(self) -> EndpointResult:
+                return EndpointResult("default")
             @Route("/nested")
-            def nested_status(self) -> ControllerResult:
-                return ControllerResult("nested")
+            def nested_status(self) -> EndpointResult:
+                return EndpointResult("nested")
 
         builder = AppBuilder()
         with builder.add_middleware(Router, RouterOptions) as opts:
@@ -47,3 +47,22 @@ class TestWsgiApp(TestCase):
         response = client.get("/status/nested")
         self.assertEqual(HttpStatus.OK, response.status)
         self.assertEqual("nested", response.body)
+
+    def test_endpoint_can_have_dependencies_injected(self) -> None:
+        class MyService:
+            message = "Up and running!"
+        class StatusController(Controller):
+            @Route()
+            def default_status(self, service: MyService) -> EndpointResult:
+                return EndpointResult(service.message)
+
+        builder = AppBuilder()
+        with builder.add_middleware(Router, RouterOptions) as opts:
+            opts.add_controller("/status", StatusController)
+
+        builder.add_service(MyService)
+        app = builder.build()
+
+        client = WsgiTestClient(app)
+        response = client.get("/status")
+        self.assertEqual(MyService.message, response.body)

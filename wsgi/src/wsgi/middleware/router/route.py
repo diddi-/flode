@@ -1,9 +1,9 @@
 from typing import ParamSpec, TypeVar, Callable
 
-from wsgi.controller.controller_result import ControllerResult
+from wsgi.endpoint.endpoint_result import EndpointResult
 from wsgi.route_template import RouteTemplate
 
-R = TypeVar("R", bound=ControllerResult)
+R = TypeVar("R", bound=EndpointResult)
 P = ParamSpec("P")
 
 

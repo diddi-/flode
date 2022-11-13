@@ -4,6 +4,7 @@ from typing import Optional, Type, TypeVar, List, Any
 
 from wsgi.di.container import Container
 from wsgi.di.provider.lifetime import Lifetime
+from wsgi.di.type_check import TypeCheck
 from wsgi.middleware.endpoint.endpoint_middleware import EndpointMiddleware
 from wsgi.middleware.middleware import Middleware
 from wsgi.middleware.middleware_options_context import MiddlewareOptionsContext
@@ -26,6 +27,10 @@ class AppBuilder:
         middleware_options = middleware.get_options()
         self._container.add_service(type(middleware_options)).using_instance(middleware_options)
         return MiddlewareOptionsContext[T](middleware_options)
+
+    def add_service(self, service: Type[T], concrete: Optional[Type[T]] = None, lifetime: Lifetime = Lifetime.NONE,
+                    type_check: TypeCheck = TypeCheck.STRICT) -> None:
+        self._container.register(service, concrete, lifetime, type_check)
 
     def build(self) -> WsgiApplication:
         self.add_middleware(EndpointMiddleware)

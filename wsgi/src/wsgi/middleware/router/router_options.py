@@ -1,6 +1,6 @@
 from typing import Dict, Type
 
-from wsgi.controller.controller import Controller
+from wsgi.endpoint.controller import Controller
 
 
 class RouterOptions:
