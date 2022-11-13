@@ -7,15 +7,8 @@ from wsgi.http_status import HttpStatus
 from wsgi.middleware.endpoint.endpoint import Endpoint
 from wsgi.middleware.middleware import Middleware
 from wsgi.middleware.router.route import Route
+from wsgi.middleware.router.router_options import RouterOptions
 from wsgi.route_template import RouteTemplate
-
-
-class RouterOptions:
-    def __init__(self) -> None:
-        self.endpoints: Dict[str, Type[Controller]] = {}
-
-    def add_controller(self, base_path: str, controller: Type[Controller]) -> None:
-        self.endpoints[base_path] = controller
 
 
 class Router(Middleware[RouterOptions]):

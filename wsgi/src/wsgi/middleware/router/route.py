@@ -8,7 +8,7 @@ P = ParamSpec("P")
 
 
 class Route:
-    PATH_ATTR = "path"
+    PATH_ATTR = "__WSGI_ROUTE_PATH__"
     def __init__(self, path: str = ""):
         self._path = path
 

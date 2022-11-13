@@ -5,7 +5,8 @@ from wsgi.controller.controller import Controller
 from wsgi.controller.controller_result import ControllerResult
 from wsgi.http_status import HttpStatus
 from wsgi.middleware.router.route import Route
-from wsgi.middleware.router.router import Router, RouterOptions
+from wsgi.middleware.router.router import Router
+from wsgi.middleware.router.router_options import RouterOptions
 from wsgi.testutil.wsgi_test_client import WsgiTestClient
 
 
