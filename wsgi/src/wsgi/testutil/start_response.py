@@ -15,8 +15,13 @@ class StartResponse:
         self.http_response = HttpResponse()
 
     def __call__(self, status: str, headers: List[Tuple[str, str]]):
-        status_code, status_message = status.split(" ")
-        self.http_response.status = HttpStatus((int(status_code), status_message))
+        parts = status.split(" ")
+        if len(parts) < 2:
+            raise ValueError("Status code must consist of a code followed by a reason (e.g. 200 'OK')")
+
+        status_code = parts[0]
+        status_reason = str.join(" ", parts[1:])
+        self.http_response.status = HttpStatus((int(status_code), status_reason))
 
         http_headers: List[HttpHeader] = []
         for header in headers:

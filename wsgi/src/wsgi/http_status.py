@@ -20,3 +20,9 @@ class HttpStatus(Enum):
     @property
     def reason(self) -> str:
         return str(self)
+
+    def to_wsgi_string(self) -> str:
+        return f"{self.code} {self.reason}"
+
+    def __repr__(self):
+        return f"<HttpStatus.{self.name}: {self.to_wsgi_string()}>"

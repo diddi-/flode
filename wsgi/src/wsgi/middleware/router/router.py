@@ -6,6 +6,7 @@ from wsgi.http_context import HttpContext
 from wsgi.http_status import HttpStatus
 from wsgi.middleware.endpoint.endpoint import Endpoint
 from wsgi.middleware.middleware import Middleware
+from wsgi.middleware.router.route import Route
 from wsgi.route_template import RouteTemplate
 
 
@@ -39,8 +40,8 @@ class Router(Middleware[RouterOptions]):
     def add_controller(self, base_path: str, controller: Type[Controller]) -> None:
         controller_path = RouteTemplate(base_path)
         for name, member in inspect.getmembers(controller):
-            if inspect.isfunction(member) and hasattr(member, "path"):
-                full_path = controller_path + getattr(member, "path")
+            if inspect.isfunction(member) and hasattr(member, Route.PATH_ATTR):
+                full_path = controller_path + getattr(member, Route.PATH_ATTR)
                 self._endpoints[full_path] = Endpoint(controller, name)
 
     def get_routes(self) -> List[RouteTemplate]:
