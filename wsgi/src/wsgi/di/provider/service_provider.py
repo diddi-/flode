@@ -30,7 +30,7 @@ class ServiceProvider(Generic[T], ABC):
         sig = signature(self._cls.__init__)
         params: List[Parameter] = []
 
-        for param_name, param in sig.parameters.items():
+        for param in sig.parameters.values():
             # For the time being we skip *args and **kwargs. May have to change.
             if param.kind not in (param.VAR_POSITIONAL, param.VAR_KEYWORD):
                 params.append(param)

@@ -130,7 +130,7 @@ class TestContainer(TestCase):
                          r"Parameter 'dep: .*\.Dependency' could not be resolved for '.*\.Service.do_work'")
     def test_missing_dependency_exception_is_raised_when_no_dependency_could_be_found_for_function(self) -> None:
         class Dependency: pass
-        def do_work(dep: Dependency) -> None: pass
+        def do_work(_dep: Dependency) -> None: pass
 
         container = Container()
         with self.assertRaises(MissingDependencyException) as err:

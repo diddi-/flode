@@ -1,5 +1,4 @@
 from inspect import Parameter
-from typing import Type
 
 
 class MissingDependencyException(Exception):

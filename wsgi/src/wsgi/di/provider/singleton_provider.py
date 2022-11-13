@@ -7,10 +7,10 @@ T = TypeVar("T")
 
 class SingletonProvider(Generic[T], ServiceProvider[T]):
     """ The SingletonProvider will return the same instance each time requested. """
-    _INSTANCE: Optional[T] = None
+    _instance: Optional[T] = None
 
     def instantiate(self, args: List[Any], kwargs: Dict[str, Any]) -> T:
-        if self._INSTANCE is None:
-            self._INSTANCE = self.provider(*args, **kwargs)
+        if self._instance is None:
+            self._instance = self.provider(*args, **kwargs)
 
-        return self._INSTANCE
+        return self._instance
