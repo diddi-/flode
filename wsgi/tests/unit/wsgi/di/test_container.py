@@ -115,7 +115,25 @@ class TestContainer(TestCase):
                          r"Parameter 'dep: .*\.Dependency' could not be resolved for '.*\.Service.do_work'")
 
     def test_missing_dependency_exception_is_raised_when_no_dependency_could_be_found_for_method(self) -> None:
-        pass
+        class Dependency: pass
+        class Service:
+            def do_work(self, dep: Dependency) -> None: pass
 
+        container = Container()
+        container.add_service(Service).using(Service)
+
+        with self.assertRaises(MissingDependencyException) as err:
+            container.invoke(Service().do_work)
+
+        self.assertRegex(str(err.exception),
+                         r"Parameter 'dep: .*\.Dependency' could not be resolved for '.*\.Service.do_work'")
     def test_missing_dependency_exception_is_raised_when_no_dependency_could_be_found_for_function(self) -> None:
-        pass
+        class Dependency: pass
+        def do_work(dep: Dependency) -> None: pass
+
+        container = Container()
+        with self.assertRaises(MissingDependencyException) as err:
+            container.invoke(do_work)
+
+        self.assertRegex(str(err.exception),
+                         r"Parameter 'dep: .*\.Dependency' could not be resolved for '.*\.do_work'")

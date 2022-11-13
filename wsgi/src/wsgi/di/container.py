@@ -24,6 +24,11 @@ class Container:
         self._providers[provider.provides_type] = provider
 
     def add_service(self, typ: Type[T]) -> Using[T]:
+        # The reason we're chaining with a Using here instead of just taking two arguments to add_service() is because
+        # the typing system is not strict enough. With add_service(Type[T], Type[T]), the typing system will go up the
+        # inheritance chain of both arguments to infer a common type, which may be 'object'. As such, any
+        # two types can be passed and still be valid by the typing system. This is different for return values however,
+        # so add_service(Type[T]) -> Using[T] will bind the two types to be exactly the same.
         return Using[T](typ, self._provider_callback)
 
     def get_service(self, typ: Type[T]) -> T:
