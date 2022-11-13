@@ -31,6 +31,9 @@ class Container:
         # so add_service(Type[T]) -> Using[T] will bind the two types to be exactly the same.
         return Using[T](typ, self._provider_callback)
 
+    def has_service(self, typ: Type[T]) -> bool:
+        return typ in self._providers
+
     def get_service(self, typ: Type[T]) -> T:
         if typ not in self._providers:
             raise ServiceNotConfiguredException(typ)

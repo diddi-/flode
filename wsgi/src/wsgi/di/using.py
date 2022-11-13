@@ -1,5 +1,6 @@
 from typing import TypeVar, Generic, Type, Callable, Dict, Any, Optional
 
+from wsgi.di.provider.instance_provider import InstanceProvider
 from wsgi.di.provider.lifetime import Lifetime
 from wsgi.di.provider.singleton_provider import SingletonProvider
 from wsgi.di.provider.service_provider import ServiceProvider
@@ -21,3 +22,4 @@ class Using(Generic[T]):
 
     def using_instance(self, instance: T) -> None:
         """ Use an already instantiated instance of a service. The lifetime is always Singleton. """
+        self._callback(InstanceProvider(self._type, type(instance), instance))

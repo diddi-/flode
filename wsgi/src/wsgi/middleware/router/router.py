@@ -24,7 +24,7 @@ class Router(Middleware[RouterOptions]):
         super().__init__()
         self._endpoints: Dict[RouteTemplate, Endpoint] = {}
 
-        for path, controller in options.endpoints:
+        for path, controller in options.endpoints.items():
             self.add_controller(path, controller)
 
     def handle_request(self, context: HttpContext) -> None:
