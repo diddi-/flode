@@ -1,4 +1,4 @@
-from typing import List, Iterator, Dict, Any
+from typing import List, Iterator, Dict, Any, Type, TypeVar, Optional
 from wsgiref.simple_server import make_server
 
 from wsgi.di.container import Container
@@ -8,8 +8,11 @@ from wsgi.http_request import HttpRequest
 from wsgi.http_response import HttpResponse
 from wsgi.middleware.endpoint.endpoint_middleware import EndpointMiddleware
 from wsgi.middleware.middleware import Middleware
+from wsgi.middleware.middleware_options_context import MiddlewareOptionsContext
 from wsgi.middleware.router.router import Router
 from wsgi.route_template import RouteTemplate
+
+T = TypeVar("T")
 
 
 class WsgiApplication:
@@ -40,6 +43,16 @@ class WsgiApplication:
             previous = self._middlewares[-1]
             previous.next_middleware = middleware
         self._middlewares.append(middleware)
+
+    def add_middleware_ctx(self, middleware: Type[Middleware[T]], _opts: Optional[Type[T]]) \
+            -> MiddlewareOptionsContext[T]:
+        # NOTE: The second argument 'opts: Type[T]' is *only* a workaround for the PyCharm IDE as it can't infer the
+        # options type from a generic base class: https://youtrack.jetbrains.com/issue/PY-53082
+        self._container.add_service(middleware).using(middleware)
+        middleware_options = middleware.OPTS()
+        self._container.add_service(type(middleware_options)).using_instance(middleware_options)
+
+        return MiddlewareOptionsContext[T](middleware_options)
 
     def run_develop(self, port: int = 8000) -> None:
         print("Running in DEVELOPMENT mode")

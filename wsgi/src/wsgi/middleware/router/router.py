@@ -9,10 +9,23 @@ from wsgi.middleware.middleware import Middleware
 from wsgi.route_template import RouteTemplate
 
 
-class Router(Middleware):
+class RouterOptions:
     def __init__(self) -> None:
+        self.endpoints: Dict[str, Type[Controller]] = {}
+
+    def add_controller(self, base_path: str, controller: Type[Controller]) -> None:
+        self.endpoints[base_path] = controller
+
+
+class Router(Middleware[RouterOptions]):
+    OPTS: RouterOptions = RouterOptions
+
+    def __init__(self, options: RouterOptions) -> None:
         super().__init__()
         self._endpoints: Dict[RouteTemplate, Endpoint] = {}
+
+        for path, controller in options.endpoints:
+            self.add_controller(path, controller)
 
     def handle_request(self, context: HttpContext) -> None:
         endpoint = self._endpoints.get(context.request.path, None)

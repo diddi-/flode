@@ -13,4 +13,4 @@ class TestMiddleware(TestCase):
         base_middleware.next_middleware = next_middleware
 
         base_middleware.handle_request(http_context)
-        verify(next_middleware, times=1)._handle_request(http_context)
+        verify(next_middleware, times=1).handle_request(http_context)

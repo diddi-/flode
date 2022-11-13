@@ -1,10 +1,15 @@
-from typing import Optional
+from typing import Optional, Generic, TypeVar, Type
 
 from wsgi.http_context import HttpContext
 
+OPTS_TYPE = TypeVar("OPTS_TYPE")
 
-class Middleware:
+
+class Middleware(Generic[OPTS_TYPE]):
     """ Middleware base class. Subclasses that inherit from Middleware should implement the handle_request() method. """
+
+    OPTS: Type[OPTS_TYPE]  # Defines the middleware's class type for its options.
+
     def __init__(self) -> None:
         self.next_middleware: Optional[Middleware] = None
 
