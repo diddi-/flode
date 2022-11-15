@@ -18,8 +18,8 @@ class TestWsgiApp(TestCase):
                 return EndpointResult("It works!")
 
         builder = AppBuilder()
-        with builder.add_middleware(Router, RouterOptions) as opts:
-            opts.add_controller("/status", StatusController)
+        with builder.add_routing() as opts:
+            opts.add_endpoint("/status", StatusController)
 
         client = WsgiTestClient(builder.build())
         response = client.get("/status")
@@ -36,8 +36,8 @@ class TestWsgiApp(TestCase):
                 return EndpointResult("nested")
 
         builder = AppBuilder()
-        with builder.add_middleware(Router, RouterOptions) as opts:
-            opts.add_controller("/status", StatusController)
+        with builder.add_routing() as opts:
+            opts.add_endpoint("/status", StatusController)
 
         client = WsgiTestClient(builder.build())
         response = client.get("/status")
@@ -57,8 +57,8 @@ class TestWsgiApp(TestCase):
                 return EndpointResult(service.message)
 
         builder = AppBuilder()
-        with builder.add_middleware(Router, RouterOptions) as opts:
-            opts.add_controller("/status", StatusController)
+        with builder.add_routing() as opts:
+            opts.add_endpoint("/status", StatusController)
 
         builder.add_service(MyService)
         app = builder.build()

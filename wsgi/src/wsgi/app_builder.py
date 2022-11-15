@@ -8,6 +8,8 @@ from wsgi.di.type_check import TypeCheck
 from wsgi.middleware.endpoint.endpoint_middleware import EndpointMiddleware
 from wsgi.middleware.middleware import Middleware
 from wsgi.middleware.middleware_options_context import MiddlewareOptionsContext
+from wsgi.middleware.router.router import Router
+from wsgi.middleware.router.router_options import RouterOptions
 from wsgi.wsgiapp import WsgiApplication
 
 T = TypeVar("T")
@@ -27,6 +29,10 @@ class AppBuilder:
         middleware_options = middleware.get_options()
         self._container.register_instance(type(middleware_options), middleware_options)
         return MiddlewareOptionsContext[T](middleware_options)
+
+    def add_routing(self) -> MiddlewareOptionsContext[RouterOptions]:
+        """ Shorthand for adding a Router middleware """
+        return self.add_middleware(Router, RouterOptions)
 
     def add_service(self, service: Type[T], concrete: Optional[Type[T]] = None, lifetime: Lifetime = Lifetime.NONE,
                     type_check: TypeCheck = TypeCheck.STRICT) -> None:

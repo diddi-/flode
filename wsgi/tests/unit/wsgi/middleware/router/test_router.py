@@ -30,8 +30,8 @@ class TestRouter(TestCase):
             def second_endpoint(self) -> EndpointResult: return EndpointResult("")
 
         opts = RouterOptions()
-        opts.add_controller("/first", FirstController)
-        opts.add_controller("/second", SecondController)
+        opts.add_endpoint("/first", FirstController)
+        opts.add_endpoint("/second", SecondController)
         router = Router(opts, Container())
 
         expected_routes = [RouteTemplate("/first"), RouteTemplate("/first/nested"), RouteTemplate("/second"),
@@ -51,7 +51,7 @@ class TestRouter(TestCase):
 
         container = Container()
         opts = RouterOptions()
-        opts.add_controller("/test", MyController)
+        opts.add_endpoint("/test", MyController)
         router = Router(opts, container)
         context = HttpContext(HttpRequest(RouteTemplate("/test"), HttpMethod.GET))
         router.handle_request(context)
