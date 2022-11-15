@@ -1,7 +1,7 @@
 from typing import cast
 
 from wsgi.di.container import Container
-from wsgi.endpoint.endpoint_result import EndpointResult
+from wsgi.middleware.endpoint.endpoint_result import EndpointResult
 from wsgi.http_context import HttpContext
 from wsgi.middleware.middleware import Middleware
 from wsgi.middleware.no_options import NoOptions

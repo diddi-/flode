@@ -1,8 +1,7 @@
 from unittest import TestCase
 
 from wsgi.di.container import Container
-from wsgi.endpoint.controller import Controller
-from wsgi.endpoint.endpoint_result import EndpointResult
+from wsgi.middleware.endpoint.endpoint_result import EndpointResult
 from wsgi.http_context import HttpContext
 from wsgi.http_method import HttpMethod
 from wsgi.http_request import HttpRequest
@@ -15,14 +14,14 @@ from wsgi.route_template import RouteTemplate
 
 class TestRouter(TestCase):
     def test_get_routes_return_list_of_added_routes(self) -> None:
-        class FirstController(Controller):
+        class FirstController:
             @Route()
             def first_endpoint(self) -> EndpointResult: return EndpointResult("")
 
             @Route("/nested")
             def second_endpoint(self) -> EndpointResult: return EndpointResult("")
 
-        class SecondController(Controller):
+        class SecondController:
             @Route()
             def first_endpoint(self) -> EndpointResult: return EndpointResult("")
 
@@ -45,7 +44,7 @@ class TestRouter(TestCase):
         self.assertEqual(HttpStatus.NOT_FOUND, context.response.status)
 
     def test_endpoint_is_set_on_context_when_matching_request_path(self) -> None:
-        class MyController(Controller):
+        class MyController:
             @Route()
             def my_method(self) -> EndpointResult: return EndpointResult("")
 

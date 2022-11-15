@@ -1,9 +1,8 @@
 import inspect
-from typing import Dict, Type, List, Any
+from typing import Dict, Type, List
 
 from wsgi.di.container import Container
 from wsgi.di.provider.lifetime import Lifetime
-from wsgi.endpoint.controller import Controller
 from wsgi.http_context import HttpContext
 from wsgi.http_status import HttpStatus
 from wsgi.middleware.endpoint.class_endpoint import ClassEndpoint
