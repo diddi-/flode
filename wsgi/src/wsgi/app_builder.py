@@ -23,9 +23,9 @@ class AppBuilder:
         # NOTE: The second argument '_opts: Type[T]' is *only* a workaround for the PyCharm IDE as it can't infer the
         # options type from a generic base class: https://youtrack.jetbrains.com/issue/PY-53082
         self._middlewares.append(middleware)
-        self._container.add_service(middleware).using(middleware, Lifetime.SINGLETON)
+        self._container.register(middleware, lifetime=Lifetime.SINGLETON)
         middleware_options = middleware.get_options()
-        self._container.add_service(type(middleware_options)).using_instance(middleware_options)
+        self._container.register_instance(type(middleware_options), middleware_options)
         return MiddlewareOptionsContext[T](middleware_options)
 
     def add_service(self, service: Type[T], concrete: Optional[Type[T]] = None, lifetime: Lifetime = Lifetime.NONE,
@@ -39,4 +39,4 @@ class AppBuilder:
             middleware = self._container.get_service(self._middlewares[index])
             middleware.next_middleware = self._container.get_service(self._middlewares[index + 1])
 
-        return WsgiApplication(self._container.get_service(self._middlewares[0]))
+        return WsgiApplication(self._container, self._middlewares[0])

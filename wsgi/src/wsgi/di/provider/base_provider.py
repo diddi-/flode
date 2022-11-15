@@ -1,11 +1,10 @@
-from abc import ABC
-from inspect import signature, Parameter
-from typing import Generic, TypeVar, Type, Dict, Any, Optional, List
+from inspect import Parameter, signature
+from typing import Generic, TypeVar, Any, Dict, List, Type, Optional
 
 T = TypeVar("T")
 
 
-class ServiceProvider(Generic[T], ABC):
+class BaseProvider(Generic[T]):
     def __init__(self, typ: Type[T], cls: Type[T], kwargs: Optional[Dict[str, Any]] = None) -> None:
         self._type = typ
         self._cls = cls
@@ -41,4 +40,4 @@ class ServiceProvider(Generic[T], ABC):
     def instantiate(self, args: List[Any], kwargs: Dict[str, Any]) -> T:
         """ This will instantiate the service. Do not call this directly, it is only intended to be used
         by the DI container. """
-        return self.provider(*args, **kwargs)
+        raise NotImplementedError()

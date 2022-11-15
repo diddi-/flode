@@ -1,4 +1,4 @@
-from typing import Iterator, Dict, Any, TypeVar
+from typing import Iterator, Dict, Any, TypeVar, Type
 from wsgiref.simple_server import make_server
 
 from wsgi.di.container import Container
@@ -13,10 +13,10 @@ T = TypeVar("T")
 
 
 class WsgiApplication:
-    def __init__(self, first_middleware: Middleware[T]) -> None:
+    def __init__(self, container: Container, first_middleware: Type[Middleware[T]]) -> None:
         # All middlewares are chained by AppBuilder, so we only need to track the first one
         self._first_middleware = first_middleware
-        self.container = Container()
+        self.container = container
 
     # start_response from wsgi spec is very strange. There is no annotations for it and no type hinting on earth will
     # satisfy mypy. We could import wsgiref.type.StartResponse which will make mypy happy but that fails at runtime
@@ -31,7 +31,8 @@ class WsgiApplication:
     def _handle_request(self, request: HttpRequest) -> HttpResponse:
         context = HttpContext(request)
         # Each middleware will call the next one, so we only need to call the first.
-        self._first_middleware.handle_request(context)
+        middleware = self.container.get_service(self._first_middleware)
+        middleware.handle_request(context)
         return context.response
 
     def run_develop(self, port: int = 8000) -> None:

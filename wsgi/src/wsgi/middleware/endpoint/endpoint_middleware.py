@@ -8,12 +8,13 @@ from wsgi.middleware.no_options import NoOptions
 
 
 class EndpointMiddleware(Middleware[NoOptions]):
+    """ This class is responsible for calling the endpoint registered for a specific path.
+        This will *always* be the last middleware in the chain. """
+
     def __init__(self, container: Container) -> None:
         super().__init__()
         self._container = container
 
-    """ This class is responsible for calling the endpoint registered for a specific path.
-        This will *always* be the last middleware in the chain. """
     def handle_request(self, context: HttpContext) -> None:
         endpoint = context.get_endpoint()
 

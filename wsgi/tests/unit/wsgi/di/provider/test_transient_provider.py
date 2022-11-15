@@ -1,16 +1,16 @@
 from unittest import TestCase
 
-from wsgi.di.provider.service_provider import ServiceProvider
+from wsgi.di.provider.transient_provider import TransientProvider
 
 
-class TestServiceProvider(TestCase):
+class TestTransientProvider(TestCase):
 
     def test_provides_type_return_the_type_it_provides_for(self) -> None:
         class MyInterface: pass
 
         class MyService(MyInterface): pass
 
-        provider = ServiceProvider[MyInterface](MyInterface, MyService)
+        provider = TransientProvider[MyInterface](MyInterface, MyService)
 
         self.assertEqual(MyInterface, provider.provides_type)
 
@@ -19,7 +19,7 @@ class TestServiceProvider(TestCase):
 
         class MyService(MyInterface): pass
 
-        provider = ServiceProvider[MyInterface](MyInterface, MyService)
+        provider = TransientProvider[MyInterface](MyInterface, MyService)
 
         self.assertEqual(MyService, provider.provider)
 
@@ -29,7 +29,7 @@ class TestServiceProvider(TestCase):
         class MyService:
             def __init__(self, name: str, amount: int, dependency: MyDependency) -> None: pass
 
-        provider = ServiceProvider[MyService](MyService, MyService)
+        provider = TransientProvider[MyService](MyService, MyService)
         params = provider.get_parameters()
 
         self.assertEqual(3, len(params))
@@ -46,7 +46,7 @@ class TestServiceProvider(TestCase):
     def test_new_instance_is_returned_each_time_the_service_is_instantiated(self) -> None:
         class MyClass: pass
 
-        provider = ServiceProvider[MyClass](MyClass, MyClass)
+        provider = TransientProvider[MyClass](MyClass, MyClass)
         instance1 = provider.instantiate([], {})
         instance2 = provider.instantiate([], {})
         self.assertNotEqual(instance1, instance2)

@@ -1,11 +1,11 @@
 from typing import Any, Dict, Generic, TypeVar, List, Optional
 
-from wsgi.di.provider.service_provider import ServiceProvider
+from wsgi.di.provider.base_provider import BaseProvider
 
 T = TypeVar("T")
 
 
-class SingletonProvider(Generic[T], ServiceProvider[T]):
+class SingletonProvider(Generic[T], BaseProvider[T]):
     """ The SingletonProvider will return the same instance each time requested. """
     _instance: Optional[T] = None
 

@@ -1,11 +1,11 @@
 from typing import Any, Dict, Generic, TypeVar, List, Type
 
-from wsgi.di.provider.service_provider import ServiceProvider
+from wsgi.di.provider.base_provider import BaseProvider
 
 T = TypeVar("T")
 
 
-class InstanceProvider(Generic[T], ServiceProvider[T]):
+class InstanceProvider(Generic[T], BaseProvider[T]):
     """ The InstanceProvider will return the same instance each time requested. """
     def __init__(self, typ: Type[T], cls: Type[T], instance: T) -> None:
         super().__init__(typ, cls)

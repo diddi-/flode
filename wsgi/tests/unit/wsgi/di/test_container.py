@@ -20,7 +20,7 @@ class TestContainer(TestCase):
     def test_container_can_resolve_service_without_dependencies(self) -> None:
         class Service: pass
         container = Container()
-        container.add_service(Service).using(Service)
+        container.register(Service)
         self.assertIsInstance(container.get_service(Service), Service)
 
     def test_container_can_resolve_single_dependency(self) -> None:
@@ -32,21 +32,22 @@ class TestContainer(TestCase):
                 self.http = http
 
         container = Container()
-        container.add_service(HttpClient).using(HttpClient)
-        container.add_service(Service).using(Service)
+        container.register(HttpClient)
+        container.register(Service)
 
         instance = container.get_service(Service)
         self.assertIsInstance(instance, Service)
         self.assertIsInstance(instance.http, HttpClient)
 
     def test_container_can_resolve_instances_with_custom_arguments(self) -> None:
+        # THIS WILL FAIL FOR NOW
         class Service:
             def __init__(self, name: str = "default") -> None:
                 self.name = name
 
         expected_name = "custom_name"
         container = Container()
-        container.add_service(Service).using(Service, kwargs={"name": expected_name})
+        container.register(Service)
 
         instance = container.get_service(Service)
         self.assertIsInstance(instance, Service)
@@ -56,7 +57,7 @@ class TestContainer(TestCase):
         class MySingleton: pass
 
         container = Container()
-        container.add_service(MySingleton).using(MySingleton, Lifetime.SINGLETON)
+        container.register(MySingleton, lifetime=Lifetime.SINGLETON)
 
         instance1 = container.get_service(MySingleton)
         instance2 = container.get_service(MySingleton)
@@ -68,7 +69,7 @@ class TestContainer(TestCase):
                 return "Works"
 
         container = Container()
-        container.add_service(Service).using(Service)
+        container.register(Service)
         service = container.get_service(Service)
         self.assertEqual("Works", container.invoke(service.do_work))
 
@@ -79,26 +80,26 @@ class TestContainer(TestCase):
                 return dep
 
         container = Container()
-        container.add_service(Dependency).using(Dependency)
-        container.add_service(Service).using(Service)
-        instance = container.get_service(Service)
+        container.register(Dependency)
+        container.register(Service)
 
+        instance = container.get_service(Service)
         dependency = container.invoke(instance.do_work)
         self.assertIsInstance(dependency, Dependency)
 
     def test_missing_dependency_exception_is_raised_when_no_dependency_could_be_found_for_instance(self) -> None:
         class Dependency: pass
         class Service:
-            def __init__(self, dep: Dependency) -> None: pass
+            def __init__(self, _dep: Dependency) -> None: pass
 
         container = Container()
-        container.add_service(Service).using(Service)
+        container.register(Service)
 
         with self.assertRaises(MissingDependencyException) as err:
             container.get_service(Service)
 
         self.assertRegex(str(err.exception),
-                         r"Parameter 'dep: .*\.Dependency' could not be resolved for '.*\.Service'")
+                         r"Parameter '_dep: .*\.Dependency' could not be resolved for '.*\.Service'")
 
     def test_missing_dependency_exception_is_raised_when_no_dependency_could_be_found_for_static_method(self) -> None:
         class Dependency: pass
@@ -107,7 +108,7 @@ class TestContainer(TestCase):
             def do_work(dep: Dependency) -> None: pass
 
         container = Container()
-        container.add_service(Service).using(Service)
+        container.register(Service)
 
         with self.assertRaises(MissingDependencyException) as err:
             container.invoke(Service.do_work)
@@ -121,7 +122,7 @@ class TestContainer(TestCase):
             def do_work(self, dep: Dependency) -> None: pass
 
         container = Container()
-        container.add_service(Service).using(Service)
+        container.register(Service)
 
         with self.assertRaises(MissingDependencyException) as err:
             container.invoke(Service().do_work)
