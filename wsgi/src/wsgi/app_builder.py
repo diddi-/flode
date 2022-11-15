@@ -4,7 +4,6 @@ from typing import Optional, Type, TypeVar, List, Any
 
 from wsgi.di.container import Container
 from wsgi.di.provider.lifetime import Lifetime
-from wsgi.di.type_check import TypeCheck
 from wsgi.middleware.endpoint.endpoint_middleware import EndpointMiddleware
 from wsgi.middleware.middleware import Middleware
 from wsgi.middleware.middleware_options_context import MiddlewareOptionsContext

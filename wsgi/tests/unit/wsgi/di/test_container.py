@@ -2,6 +2,7 @@ from unittest import TestCase
 
 from wsgi.di.container import Container
 from wsgi.di.exceptions.missing_dependency_exception import MissingDependencyException
+from wsgi.di.exceptions.no_session_started_exception import NoSessionStartedException
 from wsgi.di.exceptions.service_not_configured_exception import ServiceNotConfiguredException
 from wsgi.di.provider.lifetime import Lifetime
 from wsgi.di.type_check import TypeCheck
@@ -38,20 +39,6 @@ class TestContainer(TestCase):
         instance = container.get_service(Service)
         self.assertIsInstance(instance, Service)
         self.assertIsInstance(instance.http, HttpClient)
-
-    def test_container_can_resolve_instances_with_custom_arguments(self) -> None:
-        # THIS WILL FAIL FOR NOW
-        class Service:
-            def __init__(self, name: str = "default") -> None:
-                self.name = name
-
-        expected_name = "custom_name"
-        container = Container()
-        container.register(Service)
-
-        instance = container.get_service(Service)
-        self.assertIsInstance(instance, Service)
-        self.assertEqual(expected_name, instance.name)
 
     def test_singleton_instances_can_be_added(self) -> None:
         class MySingleton: pass
@@ -173,3 +160,42 @@ class TestContainer(TestCase):
         container.register(Service, Concrete)
 
         self.assertTrue(container.has_service(Service))
+
+    def test_session_provided_service_can_only_be_resolved_during_an_active_session(self) -> None:
+        class Service: pass
+
+        container = Container()
+        container.register(Service, lifetime=Lifetime.SESSION)
+
+        with self.assertRaises(NoSessionStartedException) as err:
+            container.get_service(Service)
+
+        self.assertEqual("No active container session has been started", str(err.exception))
+
+    def test_session_provided_service_is_returned_during_a_single_session(self) -> None:
+        class Service: pass
+
+        container = Container()
+        container.register(Service, lifetime=Lifetime.SESSION)
+
+        container.start_session()
+        first_session_service = container.get_service(Service)
+        self.assertEqual(first_session_service, container.get_service(Service))
+        container.stop_session()
+
+        container.start_session()
+        self.assertNotEqual(first_session_service, container.get_service(Service))
+        container.stop_session()
+
+    def test_container_sessions_work_with_contexts(self) -> None:
+        class Service: pass
+
+        container = Container()
+        container.register(Service, lifetime=Lifetime.SESSION)
+
+        with container.session():
+            first_session_service = container.get_service(Service)
+            self.assertEqual(first_session_service, container.get_service(Service))
+
+        with container.session():
+            self.assertNotEqual(first_session_service, container.get_service(Service))

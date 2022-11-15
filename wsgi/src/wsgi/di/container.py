@@ -1,11 +1,13 @@
+from contextlib import contextmanager
 from inspect import signature
-from typing import TypeVar, Dict, Type, cast, Any, Callable, ParamSpec, Optional
+from typing import TypeVar, Dict, Type, cast, Any, Callable, ParamSpec, Optional, Iterator
 
 from wsgi.di.exceptions.missing_dependency_exception import MissingDependencyException
 from wsgi.di.exceptions.service_not_configured_exception import ServiceNotConfiguredException
 from wsgi.di.provider.base_provider import BaseProvider
 from wsgi.di.provider.instance_provider import InstanceProvider
 from wsgi.di.provider.lifetime import Lifetime
+from wsgi.di.provider.session_provider import SessionProvider
 from wsgi.di.provider.singleton_provider import SingletonProvider
 from wsgi.di.provider.transient_provider import TransientProvider
 from wsgi.di.type_check import TypeCheck
@@ -20,6 +22,21 @@ class Container:
         self._providers: Dict[Any, BaseProvider[Any]] = {
             Container: InstanceProvider[Container](Container, Container, self)}
 
+    def start_session(self) -> None:
+        for provider in self._providers.values():
+            provider.start_session()
+
+    def stop_session(self) -> None:
+        for provider in self._providers.values():
+            provider.stop_session()
+
+    @contextmanager
+    def session(self) -> Iterator[None]:
+        """ Container session context manager """
+        self.start_session()
+        yield
+        self.stop_session()
+
     def register(self, provided_type: Type[T], provider: Optional[Type[T]] = None, lifetime: Lifetime = Lifetime.NONE,
                  type_check: TypeCheck = TypeCheck.STRICT) -> None:
         # If provider is not set, it is assumed to be same as the provided_type itself
@@ -31,6 +48,8 @@ class Container:
 
         if lifetime.is_singleton():
             self._providers[provided_type] = SingletonProvider[T](provided_type, provider)
+        elif lifetime.is_session():
+            self._providers[provided_type] = SessionProvider[T](provided_type, provider)
         else:
             self._providers[provided_type] = TransientProvider[T](provided_type, provider)
 
