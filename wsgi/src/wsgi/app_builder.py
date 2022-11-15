@@ -20,6 +20,10 @@ class AppBuilder:
         self._container = Container()
         self._middlewares: List[Type[Middleware[Any]]] = []
 
+    @property
+    def container(self) -> Container:
+        return self._container
+
     def add_middleware(self, middleware: Type[Middleware[T]], _opts: Optional[Type[T]] = None) \
             -> MiddlewareOptionsContext[T]:
         # NOTE: The second argument '_opts: Type[T]' is *only* a workaround for the PyCharm IDE as it can't infer the
@@ -33,10 +37,6 @@ class AppBuilder:
     def add_routing(self) -> MiddlewareOptionsContext[RouterOptions]:
         """ Shorthand for adding a Router middleware """
         return self.add_middleware(Router, RouterOptions)
-
-    def add_service(self, service: Type[T], concrete: Optional[Type[T]] = None, lifetime: Lifetime = Lifetime.NONE,
-                    type_check: TypeCheck = TypeCheck.STRICT) -> None:
-        self._container.register(service, concrete, lifetime, type_check)
 
     def build(self) -> WsgiApplication:
         self.add_middleware(EndpointMiddleware)

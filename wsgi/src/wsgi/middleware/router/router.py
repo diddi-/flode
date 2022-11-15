@@ -1,5 +1,5 @@
 import inspect
-from typing import Dict, Type, List
+from typing import Dict, Type, List, Any
 
 from wsgi.di.container import Container
 from wsgi.di.provider.lifetime import Lifetime
@@ -22,7 +22,7 @@ class Router(Middleware[RouterOptions]):
         self._container = container
 
         for path, controller in options.endpoints.items():
-            self.add_controller(path, controller)
+            self.add_endpoint(path, controller)
 
     def handle_request(self, context: HttpContext) -> None:
         endpoint = self._endpoints.get(context.request.path, None)
@@ -34,7 +34,7 @@ class Router(Middleware[RouterOptions]):
         context.set_endpoint(getattr(controller, endpoint.method_name))
         self.next(context)
 
-    def add_controller(self, base_path: str, controller: Type[Controller]) -> None:
+    def add_endpoint(self, base_path: str, controller: Type[object]) -> None:
         self._container.register(controller, lifetime=Lifetime.SINGLETON)
         controller_path = RouteTemplate(base_path)
         for name, member in inspect.getmembers(controller):

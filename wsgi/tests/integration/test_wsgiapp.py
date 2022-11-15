@@ -5,8 +5,6 @@ from wsgi.endpoint.controller import Controller
 from wsgi.endpoint.endpoint_result import EndpointResult
 from wsgi.http_status import HttpStatus
 from wsgi.middleware.router.route import Route
-from wsgi.middleware.router.router import Router
-from wsgi.middleware.router.router_options import RouterOptions
 from wsgi.testutil.wsgi_test_client import WsgiTestClient
 
 
@@ -60,7 +58,7 @@ class TestWsgiApp(TestCase):
         with builder.add_routing() as opts:
             opts.add_endpoint("/status", StatusController)
 
-        builder.add_service(MyService)
+        builder.container.register(MyService)
         app = builder.build()
 
         client = WsgiTestClient(app)
