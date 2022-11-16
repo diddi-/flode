@@ -7,7 +7,6 @@ from wsgi.http_method import HttpMethod
 from wsgi.http_request import HttpRequest
 from wsgi.http_response import HttpResponse
 from wsgi.middleware.middleware import Middleware
-from wsgi.route_template import RouteTemplate
 
 T = TypeVar("T")
 
@@ -22,7 +21,7 @@ class WsgiApplication:
     # satisfy mypy. We could import wsgiref.type.StartResponse which will make mypy happy but that fails at runtime
     # because wsgiref.type is not available then... This will be ignored for now.
     def __call__(self, environ: Dict[str, Any], start_response) -> Iterator[bytes]:  # type: ignore
-        request = HttpRequest(RouteTemplate(environ["PATH_INFO"]), HttpMethod(environ["REQUEST_METHOD"]))
+        request = HttpRequest(environ["PATH_INFO"], HttpMethod(environ["REQUEST_METHOD"]))
         response = self._handle_request(request)
         start_response(f"{response.status.code} {response.status.reason}",
                        response.headers.as_wsgi())

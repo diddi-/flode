@@ -41,3 +41,10 @@ class RouteTemplate:
         self_path = self._raw_path.removesuffix("/")
         other_path = other._raw_path.removeprefix("/")
         return RouteTemplate(self_path + "/" + other_path)
+
+    def matches(self, request_path: str) -> bool:
+        if self._raw_path == request_path \
+            or (self._raw_path == "" and request_path == "/"):
+            return True
+
+        return False

@@ -1,5 +1,5 @@
 import inspect
-from typing import Dict, Type, List, cast
+from typing import Type, List, cast
 
 from wsgi.di.container import Container
 from wsgi.di.provider.lifetime import Lifetime
@@ -26,7 +26,7 @@ class Router(Middleware[RouterOptions]):
 
     def handle_request(self, context: HttpContext) -> None:
         try:
-            endpoint = self._endpoints.get_endpoint(str(context.request.path), context.request.http_method)
+            endpoint = self._endpoints.get_endpoint(context.request.path, context.request.http_method)
         except ValueError:
             context.response.status = HttpStatus.NOT_FOUND
             return

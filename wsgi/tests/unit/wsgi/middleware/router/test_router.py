@@ -1,11 +1,12 @@
 from unittest import TestCase
 
 from wsgi.di.container import Container
-from wsgi.middleware.endpoint.endpoint_result import EndpointResult
 from wsgi.http_context import HttpContext
+from wsgi.http_context_builder import HttpContextBuilder
 from wsgi.http_method import HttpMethod
 from wsgi.http_request import HttpRequest
 from wsgi.http_status import HttpStatus
+from wsgi.middleware.endpoint.endpoint_result import EndpointResult
 from wsgi.middleware.router.route import Route
 from wsgi.middleware.router.router import Router
 from wsgi.middleware.router.router_options import RouterOptions
@@ -39,7 +40,7 @@ class TestRouter(TestCase):
 
     def test_response_status_is_set_to_404_not_found_when_no_endpoint_could_be_found_for_path(self) -> None:
         router = Router(RouterOptions(), Container())
-        context = HttpContext(HttpRequest(RouteTemplate("/test"), HttpMethod.GET))
+        context = HttpContext(HttpRequest("/test", HttpMethod.GET))
         router.handle_request(context)
         self.assertEqual(HttpStatus.NOT_FOUND, context.response.status)
 
@@ -52,7 +53,7 @@ class TestRouter(TestCase):
         opts = RouterOptions()
         opts.add_endpoint("/test", MyController)
         router = Router(opts, container)
-        context = HttpContext(HttpRequest(RouteTemplate("/test"), HttpMethod.GET))
+        context = HttpContext(HttpRequest("/test", HttpMethod.GET))
         router.handle_request(context)
         controller = container.get_service(MyController)
         self.assertEqual(controller.my_method, context.get_endpoint())
@@ -60,6 +61,7 @@ class TestRouter(TestCase):
     def test_endpoints_can_specify_what_http_methods_they_support(self) -> None:
         expected_get_result = "GET RESULT"
         expected_post_result = "POST RESULT"
+
         class MyController:
             @Route(http_methods=[HttpMethod.GET])
             def get_method(self) -> EndpointResult:
@@ -75,8 +77,8 @@ class TestRouter(TestCase):
         router = Router(opts, container)
         controller = container.get_service(MyController)
 
-        get_context = HttpContext(HttpRequest(RouteTemplate("/"), HttpMethod.GET))
-        post_context = HttpContext(HttpRequest(RouteTemplate("/"), HttpMethod.POST))
+        get_context = HttpContextBuilder().path("/").http_method(HttpMethod.GET).build()
+        post_context = HttpContextBuilder().path("/").http_method(HttpMethod.POST).build()
         router.handle_request(get_context)
         router.handle_request(post_context)
         self.assertEqual(controller.get_method, get_context.get_endpoint())

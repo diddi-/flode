@@ -27,6 +27,6 @@ class EndpointCollection:
 
     def get_endpoint(self, path: str, http_method: HttpMethod) -> ClassEndpoint:
         for endpoint in self._endpoints:
-            if str(endpoint.route.path) == path and http_method in endpoint.route.http_methods:
+            if endpoint.route.path.matches(path) and http_method in endpoint.route.http_methods:
                 return endpoint
         raise ValueError(f"No endpoint matches {http_method} {path}")
