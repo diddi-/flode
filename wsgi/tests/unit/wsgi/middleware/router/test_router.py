@@ -56,3 +56,28 @@ class TestRouter(TestCase):
         router.handle_request(context)
         controller = container.get_service(MyController)
         self.assertEqual(controller.my_method, context.get_endpoint())
+
+    def test_endpoints_can_specify_what_http_methods_they_support(self) -> None:
+        expected_get_result = "GET RESULT"
+        expected_post_result = "POST RESULT"
+        class MyController:
+            @Route(http_methods=[HttpMethod.GET])
+            def get_method(self) -> EndpointResult:
+                return EndpointResult(expected_get_result)
+
+            @Route(http_methods=[HttpMethod.POST])
+            def post_method(self) -> EndpointResult:
+                return EndpointResult(expected_post_result)
+
+        container = Container()
+        opts = RouterOptions()
+        opts.add_endpoint("/", MyController)
+        router = Router(opts, container)
+        controller = container.get_service(MyController)
+
+        get_context = HttpContext(HttpRequest(RouteTemplate("/"), HttpMethod.GET))
+        post_context = HttpContext(HttpRequest(RouteTemplate("/"), HttpMethod.POST))
+        router.handle_request(get_context)
+        router.handle_request(post_context)
+        self.assertEqual(controller.get_method, get_context.get_endpoint())
+        self.assertEqual(controller.post_method, post_context.get_endpoint())
