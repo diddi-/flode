@@ -59,17 +59,14 @@ class TestRouter(TestCase):
         self.assertEqual(controller.my_method, context.get_endpoint())
 
     def test_endpoints_can_specify_what_http_methods_they_support(self) -> None:
-        expected_get_result = "GET RESULT"
-        expected_post_result = "POST RESULT"
-
         class MyController:
             @Route(http_methods=[HttpMethod.GET])
             def get_method(self) -> EndpointResult:
-                return EndpointResult(expected_get_result)
+                return EndpointResult("GET method")
 
             @Route(http_methods=[HttpMethod.POST])
             def post_method(self) -> EndpointResult:
-                return EndpointResult(expected_post_result)
+                return EndpointResult("POST method")
 
         container = Container()
         opts = RouterOptions()
@@ -83,3 +80,25 @@ class TestRouter(TestCase):
         router.handle_request(post_context)
         self.assertEqual(controller.get_method, get_context.get_endpoint())
         self.assertEqual(controller.post_method, post_context.get_endpoint())
+
+    def test_endpoints_can_support_multiple_http_methods(self) -> None:
+        class MyController:
+            @Route(http_methods=[HttpMethod.GET, HttpMethod.POST, HttpMethod.DELETE])
+            def multi_method(self) -> EndpointResult:
+                return EndpointResult("MULTI METHOD")
+
+        container = Container()
+        opts = RouterOptions()
+        opts.add_endpoint("/", MyController)
+        router = Router(opts, container)
+        controller = container.get_service(MyController)
+
+        get_context = HttpContextBuilder().path("/").http_method(HttpMethod.GET).build()
+        post_context = HttpContextBuilder().path("/").http_method(HttpMethod.POST).build()
+        delete_context = HttpContextBuilder().path("/").http_method(HttpMethod.DELETE).build()
+        router.handle_request(get_context)
+        router.handle_request(post_context)
+        router.handle_request(delete_context)
+        self.assertEqual(controller.multi_method, get_context.get_endpoint())
+        self.assertEqual(controller.multi_method, post_context.get_endpoint())
+        self.assertEqual(controller.multi_method, delete_context.get_endpoint())
