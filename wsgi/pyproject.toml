@@ -21,5 +21,6 @@ test = [
     "pytest",
     "mockito",
     "pylint>=2.15.4",
-    "mypy"
+    "mypy",
+    "coverage"
 ]
