@@ -2,7 +2,7 @@ from typing import List
 
 from wsgi.http_method import HttpMethod
 from wsgi.middleware.endpoint.class_endpoint import ClassEndpoint
-from wsgi.route_pattern import RoutePattern
+from wsgi.middleware.router.route_pattern import RoutePattern
 
 
 class EndpointCollection:

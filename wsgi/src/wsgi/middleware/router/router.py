@@ -10,7 +10,7 @@ from wsgi.middleware.middleware import Middleware
 from wsgi.middleware.router.endpoint_collection import EndpointCollection
 from wsgi.middleware.router.route import Route
 from wsgi.middleware.router.router_options import RouterOptions
-from wsgi.route_pattern import RoutePattern
+from wsgi.middleware.router.route_pattern import RoutePattern
 
 
 class Router(Middleware[RouterOptions]):
