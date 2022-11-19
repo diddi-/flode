@@ -10,7 +10,7 @@ from wsgi.middleware.middleware import Middleware
 from wsgi.middleware.router.endpoint_collection import EndpointCollection
 from wsgi.middleware.router.route import Route
 from wsgi.middleware.router.router_options import RouterOptions
-from wsgi.route_template import RouteTemplate
+from wsgi.route_pattern import RoutePattern
 
 
 class Router(Middleware[RouterOptions]):
@@ -37,12 +37,12 @@ class Router(Middleware[RouterOptions]):
 
     def add_endpoint(self, base_path: str, controller: Type[object]) -> None:
         self._container.register(controller, lifetime=Lifetime.SINGLETON)
-        controller_path = RouteTemplate(base_path)
+        controller_path = RoutePattern(base_path)
         for name, member in inspect.getmembers(controller):
             if inspect.isroutine(member) and hasattr(member, Route.ROUTE_ATTR):
                 route = cast(Route, getattr(member, Route.ROUTE_ATTR))
                 full_path = controller_path + route.path
                 self._endpoints.add(ClassEndpoint(controller, name, Route(str(full_path), route.http_methods)))
 
-    def get_routes(self) -> List[RouteTemplate]:
+    def get_routes(self) -> List[RoutePattern]:
         return self._endpoints.get_all_routes()

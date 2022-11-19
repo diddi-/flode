@@ -1,8 +1,8 @@
 from unittest import TestCase
 
 from wsgi.app_builder import AppBuilder
-from wsgi.middleware.endpoint.endpoint_result import EndpointResult
 from wsgi.http_status import HttpStatus
+from wsgi.middleware.endpoint.endpoint_result import EndpointResult
 from wsgi.middleware.router.route import Route
 from wsgi.testutil.wsgi_test_client import WsgiTestClient
 
@@ -28,6 +28,7 @@ class TestWsgiApp(TestCase):
             @Route()
             def default_status(self) -> EndpointResult:
                 return EndpointResult("default")
+
             @Route("/nested")
             def nested_status(self) -> EndpointResult:
                 return EndpointResult("nested")
@@ -48,6 +49,7 @@ class TestWsgiApp(TestCase):
     def test_endpoint_can_have_dependencies_injected(self) -> None:
         class MyService:
             message = "Up and running!"
+
         class StatusController:
             @Route()
             def default_status(self, service: MyService) -> EndpointResult:

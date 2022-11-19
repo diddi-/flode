@@ -2,7 +2,7 @@ from typing import List
 
 from wsgi.http_method import HttpMethod
 from wsgi.middleware.endpoint.class_endpoint import ClassEndpoint
-from wsgi.route_template import RouteTemplate
+from wsgi.route_pattern import RoutePattern
 
 
 class EndpointCollection:
@@ -12,8 +12,8 @@ class EndpointCollection:
     def add(self, endpoint: ClassEndpoint) -> None:
         self._endpoints.append(endpoint)
 
-    def get_all_routes(self) -> List[RouteTemplate]:
-        routes: List[RouteTemplate] = []
+    def get_all_routes(self) -> List[RoutePattern]:
+        routes: List[RoutePattern] = []
         for endpoint in self._endpoints:
             routes.append(endpoint.route.path)
 

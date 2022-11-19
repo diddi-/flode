@@ -10,7 +10,7 @@ from wsgi.middleware.endpoint.endpoint_result import EndpointResult
 from wsgi.middleware.router.route import Route
 from wsgi.middleware.router.router import Router
 from wsgi.middleware.router.router_options import RouterOptions
-from wsgi.route_template import RouteTemplate
+from wsgi.route_pattern import RoutePattern
 
 
 class TestRouter(TestCase):
@@ -34,8 +34,8 @@ class TestRouter(TestCase):
         opts.add_endpoint("/second", SecondController)
         router = Router(opts, Container())
 
-        expected_routes = [RouteTemplate("/first"), RouteTemplate("/first/nested"), RouteTemplate("/second"),
-                           RouteTemplate("/second/nested")]
+        expected_routes = [RoutePattern("/first"), RoutePattern("/first/nested"), RoutePattern("/second"),
+                           RoutePattern("/second/nested")]
         self.assertEqual(expected_routes, router.get_routes())
 
     def test_response_status_is_set_to_404_not_found_when_no_endpoint_could_be_found_for_path(self) -> None:
