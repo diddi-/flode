@@ -22,10 +22,18 @@ class TestRoutePattern(TestCase):
         pattern2 = RoutePattern("/profile")
         self.assertEqual(expected_path, str(pattern1 + pattern2))
 
-    def test_trailing_slashes_are_removed_from_pattern(self) -> None:
-        pattern = RoutePattern("/user/")
-        self.assertEqual("/user", str(pattern))
-
     def test_special_characters_are_not_allowed_in_pattern(self) -> None:
-        with self.assertRaises(InvalidRoutePatternException):
+        with self.assertRaises(InvalidRoutePatternException) as err:
             RoutePattern("/user/%#/profile")
+
+        self.assertIn(f"is not a valid route pattern", str(err.exception))
+
+    def test_route_patterns_must_start_with_a_slash(self) -> None:
+        with self.assertRaises(InvalidRoutePatternException) as err:
+            RoutePattern("user/profile")
+        self.assertIn("must begin with a '/'", str(err.exception))
+
+    def test_route_patterns_cant_end_with_slash(self) -> None:
+        with self.assertRaises(InvalidRoutePatternException) as err:
+            RoutePattern("/user/")
+        self.assertIn("can't end with a '/'", str(err.exception))

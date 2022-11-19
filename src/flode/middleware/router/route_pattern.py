@@ -7,10 +7,15 @@ from flode.middleware.router.exceptions.invalid_route_pattern_exception import I
 
 
 class RoutePattern:
-    _PATTERN_REGEX = re.compile(r"^[-/A-Za-z0-9_]+$")
+    _PATTERN_REGEX = re.compile(r"^/[-/A-Za-z0-9_]+$")
+
     def __init__(self, pattern: str):
-        if len(pattern) and not self._PATTERN_REGEX.match(pattern):
-            raise InvalidRoutePatternException(pattern)
+        if not pattern.startswith("/"):
+            raise InvalidRoutePatternException(f"Route patterns must begin with a '/'")
+        if pattern.endswith("/"):
+            raise InvalidRoutePatternException(f"Route patterns can't end with a '/'")
+        if not self._PATTERN_REGEX.match(pattern):
+            raise InvalidRoutePatternException(f"'{pattern}' is not a valid route pattern")
         self._raw_pattern = pattern.removesuffix("/")
 
     def __str__(self) -> str:
@@ -31,4 +36,4 @@ class RoutePattern:
         return False
 
     def __repr__(self) -> str:
-        return f"<{self.__name__}: {self._raw_pattern}>"
+        return f"<{self.__class__.__name__}: {self._raw_pattern}>"
