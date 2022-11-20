@@ -18,9 +18,9 @@ class WsgiApplication:
         self._first_middleware = first_middleware
         self.container = container
 
-    # start_response from wsgi_package spec is very strange. There is no annotations for it and no type hinting on earth will
-    # satisfy mypy. We could import wsgiref.type.StartResponse which will make mypy happy but that fails at runtime
-    # because wsgiref.type is not available then... This will be ignored for now.
+    # start_response from wsgi_package spec is very strange. There is no annotations for it and no type hinting on
+    # earth will satisfy mypy. We could import wsgiref.type.StartResponse which will make mypy happy but that fails at
+    # runtime because wsgiref.type is not available then... This will be ignored for now.
     def __call__(self, environ: Dict[str, Any], start_response) -> Iterator[bytes]:  # type: ignore
         request = HttpRequest(UrlPath(environ["PATH_INFO"]), HttpMethod(environ["REQUEST_METHOD"]))
         response = self._handle_request(request)

@@ -1,17 +1,14 @@
 from unittest import TestCase
 
 from flode.di.container import Container
-from flode.http_context import HttpContext
 from flode.http_context_builder import HttpContextBuilder
 from flode.http_method import HttpMethod
-from flode.http_request import HttpRequest
 from flode.http_status import HttpStatus
 from flode.middleware.endpoint.endpoint_result import EndpointResult
 from flode.middleware.router.route import Route
+from flode.middleware.router.route_pattern import RoutePattern
 from flode.middleware.router.router import Router
 from flode.middleware.router.router_options import RouterOptions
-from flode.middleware.router.route_pattern import RoutePattern
-from flode.middleware.router.url_path import UrlPath
 
 
 class TestRouter(TestCase):

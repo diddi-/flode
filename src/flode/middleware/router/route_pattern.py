@@ -52,8 +52,8 @@ class RoutePattern:
 
         index = 0
         for part in self._pattern_parts:
-            if part in self._placeholders.keys():
-                if not self._placeholders[part].matches(url_path[index]):
+            if placeholder := self._placeholders.get(part, None):
+                if not placeholder.matches(url_path[index]):
                     return False
 
             elif not part == url_path[index]:

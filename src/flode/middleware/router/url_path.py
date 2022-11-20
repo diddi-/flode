@@ -14,9 +14,9 @@ class UrlPath:
 
     def __init__(self, path: str) -> None:
         if not path.startswith("/"):
-            raise InvalidPathException(f"URL paths must begin with a '/'")
+            raise InvalidPathException("URL paths must begin with a '/'")
         if len(path) > 1 and path.endswith("/"):
-            raise InvalidPathException(f"URL paths can't end with a '/'")
+            raise InvalidPathException("URL paths can't end with a '/'")
         if not self._PATH_REGEX.match(path):
             raise InvalidPathException(f"'{path}' is not a valid URL path")
 

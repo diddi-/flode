@@ -27,7 +27,7 @@ class TestRoutePattern(TestCase):
         with self.assertRaises(InvalidRoutePatternException) as err:
             RoutePattern("/user/%#/profile")
 
-        self.assertIn(f"is not a valid route pattern", str(err.exception))
+        self.assertIn("is not a valid route pattern", str(err.exception))
 
     def test_route_patterns_must_start_with_a_slash(self) -> None:
         with self.assertRaises(InvalidRoutePatternException) as err:

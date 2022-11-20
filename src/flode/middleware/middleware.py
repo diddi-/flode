@@ -12,7 +12,7 @@ OPTS_TYPE = TypeVar("OPTS_TYPE")
 class Middleware(Generic[OPTS_TYPE]):
     """ Middleware base class. Subclasses that inherit from Middleware should implement the handle_request() method. """
 
-    _OPTS: Type[OPTS_TYPE] # Defines the middleware's class type for its options.
+    _OPTS: Type[OPTS_TYPE]  # Defines the middleware's class type for its options.
 
     def __init__(self) -> None:
         self.next_middleware: Optional[Middleware[OPTS_TYPE]] = None
