@@ -3,6 +3,7 @@ from typing import List
 from flode.http_method import HttpMethod
 from flode.middleware.endpoint.class_endpoint import ClassEndpoint
 from flode.middleware.router.route_pattern import RoutePattern
+from flode.middleware.router.url_path import UrlPath
 
 
 class EndpointCollection:
@@ -25,7 +26,7 @@ class EndpointCollection:
                 return True
         return False
 
-    def get_endpoint(self, path: str, http_method: HttpMethod) -> ClassEndpoint:
+    def get_endpoint(self, path: UrlPath, http_method: HttpMethod) -> ClassEndpoint:
         for endpoint in self._endpoints:
             if endpoint.route.path.matches(path) and http_method in endpoint.route.http_methods:
                 return endpoint

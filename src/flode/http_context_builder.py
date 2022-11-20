@@ -5,6 +5,7 @@ from typing import Optional
 from flode.http_context import HttpContext
 from flode.http_method import HttpMethod
 from flode.http_request import HttpRequest
+from flode.middleware.router.url_path import UrlPath
 
 
 class HttpContextBuilder:
@@ -24,5 +25,5 @@ class HttpContextBuilder:
     def build(self) -> HttpContext:
         if not self._path:
             raise ValueError("HttpContext require a route path")
-        request = HttpRequest(self._path, self._method)
+        request = HttpRequest(UrlPath(self._path), self._method)
         return HttpContext(request)

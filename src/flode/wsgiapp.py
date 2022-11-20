@@ -7,6 +7,7 @@ from flode.http_method import HttpMethod
 from flode.http_request import HttpRequest
 from flode.http_response import HttpResponse
 from flode.middleware.middleware import Middleware
+from flode.middleware.router.url_path import UrlPath
 
 T = TypeVar("T")
 
@@ -21,7 +22,7 @@ class WsgiApplication:
     # satisfy mypy. We could import wsgiref.type.StartResponse which will make mypy happy but that fails at runtime
     # because wsgiref.type is not available then... This will be ignored for now.
     def __call__(self, environ: Dict[str, Any], start_response) -> Iterator[bytes]:  # type: ignore
-        request = HttpRequest(environ["PATH_INFO"], HttpMethod(environ["REQUEST_METHOD"]))
+        request = HttpRequest(UrlPath(environ["PATH_INFO"]), HttpMethod(environ["REQUEST_METHOD"]))
         response = self._handle_request(request)
         start_response(f"{response.status.code} {response.status.reason}",
                        response.headers.as_wsgi())

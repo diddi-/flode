@@ -11,6 +11,7 @@ from flode.middleware.router.route import Route
 from flode.middleware.router.router import Router
 from flode.middleware.router.router_options import RouterOptions
 from flode.middleware.router.route_pattern import RoutePattern
+from flode.middleware.router.url_path import UrlPath
 
 
 class TestRouter(TestCase):
@@ -40,7 +41,7 @@ class TestRouter(TestCase):
 
     def test_response_status_is_set_to_404_not_found_when_no_endpoint_could_be_found_for_path(self) -> None:
         router = Router(RouterOptions(), Container())
-        context = HttpContext(HttpRequest("/test", HttpMethod.GET))
+        context = HttpContextBuilder().path("/user/profile").build()
         router.handle_request(context)
         self.assertEqual(HttpStatus.NOT_FOUND, context.response.status)
 
@@ -53,7 +54,7 @@ class TestRouter(TestCase):
         opts = RouterOptions()
         opts.add_endpoint("/test", MyController)
         router = Router(opts, container)
-        context = HttpContext(HttpRequest("/test", HttpMethod.GET))
+        context = HttpContextBuilder().path("/test").build()
         router.handle_request(context)
         controller = container.get_service(MyController)
         self.assertEqual(controller.my_method, context.get_endpoint())

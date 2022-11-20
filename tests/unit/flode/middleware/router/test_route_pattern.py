@@ -2,6 +2,7 @@ from unittest import TestCase
 
 from flode.middleware.router.exceptions.invalid_route_pattern_exception import InvalidRoutePatternException
 from flode.middleware.router.route_pattern import RoutePattern
+from flode.middleware.router.url_path import UrlPath
 
 
 class TestRoutePattern(TestCase):
@@ -37,3 +38,21 @@ class TestRoutePattern(TestCase):
         with self.assertRaises(InvalidRoutePatternException) as err:
             RoutePattern("/user/")
         self.assertIn("can't end with a '/'", str(err.exception))
+
+    def test_route_patterns_can_be_matched_against_url_paths(self) -> None:
+        path = UrlPath("/user/1/profile")
+        self.assertTrue(RoutePattern(str(path)).matches(path), "Route pattern matches string")
+
+    def test_route_patterns_can_have_placeholders(self) -> None:
+        pattern = RoutePattern("/user/<id>/profile")
+        self.assertTrue(pattern.matches(UrlPath("/user/1/profile")), "Route pattern matches string")
+
+    def test_single_slash_route_patterns_are_allowed(self) -> None:
+        self.assertEqual("/", str(RoutePattern("/")))
+
+    def test_single_slash_route_pattern_can_be_appended_to_another_route_pattern(self) -> None:
+        pattern1 = RoutePattern("/user")
+        pattern2 = RoutePattern("/")
+        expected_pattern = RoutePattern("/user")
+
+        self.assertEqual(expected_pattern, pattern1 + pattern2)
