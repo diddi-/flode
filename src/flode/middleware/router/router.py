@@ -25,12 +25,11 @@ class Router(Middleware[RouterOptions]):
             self.add_endpoint(path, controller)
 
     def handle_request(self, context: HttpContext) -> None:
-        try:
-            endpoint = self._endpoints.get_endpoint(context.request.path, context.request.http_method)
-        except ValueError:
+        if not self._endpoints.has_endpoint(context.request.path, context.request.http_method):
             context.response.status = HttpStatus.NOT_FOUND
             return
 
+        endpoint = self._endpoints.get_endpoint(context.request.path, context.request.http_method)
         controller = self._container.get_service(endpoint.controller)
         context.set_endpoint(getattr(controller, endpoint.method_name))
         self.next(context)
@@ -41,7 +40,7 @@ class Router(Middleware[RouterOptions]):
         for name, member in inspect.getmembers(controller):
             if inspect.isroutine(member) and hasattr(member, Route.ROUTE_ATTR):
                 route = cast(Route, getattr(member, Route.ROUTE_ATTR))
-                full_path = controller_path + route.path
+                full_path = controller_path + route.pattern
                 self._endpoints.add(ClassEndpoint(controller, name, Route(str(full_path), route.http_methods)))
 
     def get_routes(self) -> List[RoutePattern]:

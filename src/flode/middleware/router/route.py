@@ -11,8 +11,9 @@ P = ParamSpec("P")
 class Route:
     """ A Route connects a Path with an Endpoint. It contains a  """
     ROUTE_ATTR = "__WSGI_ROUTE__"
-    def __init__(self, path: str = "/", http_methods: Optional[List[HttpMethod]] = None):
-        self._path = RoutePattern(path)
+
+    def __init__(self, pattern: str = "/", http_methods: Optional[List[HttpMethod]] = None):
+        self._pattern = RoutePattern(pattern)
         self._http_methods: List[HttpMethod] = http_methods if http_methods else [HttpMethod.GET]
 
     def __call__(self, method: Callable[P, R]) -> Callable[P, R]:
@@ -20,8 +21,8 @@ class Route:
         return method
 
     @property
-    def path(self) -> RoutePattern:
-        return self._path
+    def pattern(self) -> RoutePattern:
+        return self._pattern
 
     @property
     def http_methods(self) -> List[HttpMethod]:

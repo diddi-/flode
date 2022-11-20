@@ -16,18 +16,19 @@ class EndpointCollection:
     def get_all_routes(self) -> List[RoutePattern]:
         routes: List[RoutePattern] = []
         for endpoint in self._endpoints:
-            routes.append(endpoint.route.path)
+            routes.append(endpoint.route.pattern)
 
         return routes
 
-    def has_endpoint(self, path: str, http_method: HttpMethod) -> bool:
-        for endpoint in self._endpoints:
-            if str(endpoint.route.path) == path and http_method in endpoint.route.http_methods:
-                return True
-        return False
+    def has_endpoint(self, path: UrlPath, http_method: HttpMethod) -> bool:
+        try:
+            self.get_endpoint(path, http_method)
+            return True
+        except ValueError:
+            return False
 
     def get_endpoint(self, path: UrlPath, http_method: HttpMethod) -> ClassEndpoint:
         for endpoint in self._endpoints:
-            if endpoint.route.path.matches(path) and http_method in endpoint.route.http_methods:
+            if endpoint.route.pattern.matches(path) and http_method in endpoint.route.http_methods:
                 return endpoint
         raise ValueError(f"No endpoint matches {http_method} {path}")

@@ -4,7 +4,7 @@ import re
 from typing import Any, List, Dict
 
 from flode.middleware.router.exceptions.invalid_route_pattern_exception import InvalidRoutePatternException
-from flode.middleware.router.string_placeholder import StringPlaceholder
+from flode.middleware.router.placeholder.string_placeholder import StringPlaceholder
 from flode.middleware.router.url_path import UrlPath
 
 

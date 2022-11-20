@@ -12,8 +12,8 @@ Controllers should *not* be used within this project.
 
 **Route**
 
-A Route connects a Path with an Endpoint. It is what allows the routing middleware to know where to send the request.
-It is neither a Path nor an Endpoint, it's a combination of the two.
+A Route connects a Path, HTTP method and Endpoint. It is what allows the routing middleware to know where to send the request.
+The Route is a combination of Path, HTTP method and the endpoint.
 
 **Path**
 

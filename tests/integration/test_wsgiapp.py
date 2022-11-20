@@ -65,3 +65,21 @@ class TestWsgiApp(TestCase):
         client = WsgiTestClient(app)
         response = client.get("/status")
         self.assertEqual(MyService.message, response.body)
+
+    def test_path_placeholders_can_be_injected_to_endpoint(self) -> None:
+        expected_uid = 123
+
+        class ProfileController:
+            @Route("/user/<uid: int>/profile")
+            def default_status(self, uid: int) -> EndpointResult:
+                return EndpointResult(str(uid))
+
+        builder = AppBuilder()
+        with builder.add_routing() as opts:
+            opts.add_endpoint("/", ProfileController)
+
+        app = builder.build()
+
+        client = WsgiTestClient(app)
+        response = client.get("/status")
+        self.assertEqual(expected_uid, response.body)
