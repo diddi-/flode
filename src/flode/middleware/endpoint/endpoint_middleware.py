@@ -19,6 +19,6 @@ class EndpointMiddleware(Middleware[NoOptions]):
         endpoint = context.get_endpoint()
 
         # NOTE: This needs better checking of the return type at runtime but also ensure static typing works.
-        result = cast(EndpointResult, self._container.invoke(endpoint))
+        result = cast(EndpointResult, self._container.invoke(endpoint.fn))
         context.response.body = result.content
         context.response.status = result.status

@@ -4,6 +4,7 @@ from flode.di.container import Container
 from flode.http_context_builder import HttpContextBuilder
 from flode.http_method import HttpMethod
 from flode.http_status import HttpStatus
+from flode.middleware.endpoint.endpoint import Endpoint
 from flode.middleware.endpoint.endpoint_result import EndpointResult
 from flode.middleware.router.route import Route
 from flode.middleware.router.route_pattern import RoutePattern
@@ -54,7 +55,8 @@ class TestRouter(TestCase):
         context = HttpContextBuilder().path("/test").build()
         router.handle_request(context)
         controller = container.get_service(MyController)
-        self.assertEqual(controller.my_method, context.get_endpoint())
+        expected_endpoint = Endpoint(controller.my_method, Route("/test"))
+        self.assertEqual(expected_endpoint, context.get_endpoint())
 
     def test_endpoints_can_specify_what_http_methods_they_support(self) -> None:
         class MyController:
@@ -76,8 +78,11 @@ class TestRouter(TestCase):
         post_context = HttpContextBuilder().path("/").http_method(HttpMethod.POST).build()
         router.handle_request(get_context)
         router.handle_request(post_context)
-        self.assertEqual(controller.get_method, get_context.get_endpoint())
-        self.assertEqual(controller.post_method, post_context.get_endpoint())
+
+        expected_get_endpoint = Endpoint(controller.get_method, Route())
+        expected_post_endpoint = Endpoint(controller.post_method, Route(http_methods=[HttpMethod.POST]))
+        self.assertEqual(expected_get_endpoint, get_context.get_endpoint())
+        self.assertEqual(expected_post_endpoint, post_context.get_endpoint())
 
     def test_endpoints_can_support_multiple_http_methods(self) -> None:
         class MyController:
@@ -97,6 +102,8 @@ class TestRouter(TestCase):
         router.handle_request(get_context)
         router.handle_request(post_context)
         router.handle_request(delete_context)
-        self.assertEqual(controller.multi_method, get_context.get_endpoint())
-        self.assertEqual(controller.multi_method, post_context.get_endpoint())
-        self.assertEqual(controller.multi_method, delete_context.get_endpoint())
+        expected_endpoint = Endpoint(controller.multi_method, Route(http_methods=[HttpMethod.GET, HttpMethod.POST,
+                                                                                  HttpMethod.DELETE]))
+        self.assertEqual(expected_endpoint, get_context.get_endpoint())
+        self.assertEqual(expected_endpoint, post_context.get_endpoint())
+        self.assertEqual(expected_endpoint, delete_context.get_endpoint())

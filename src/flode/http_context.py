@@ -1,9 +1,8 @@
-from typing import Optional, TypeVar, Callable
+from typing import Optional
 
 from flode.http_request import HttpRequest
 from flode.http_response import HttpResponse
-
-R = TypeVar("R")
+from flode.middleware.endpoint.endpoint import Endpoint
 
 
 class HttpContext:
@@ -11,13 +10,12 @@ class HttpContext:
         self.request = request
         self.response = HttpResponse()
 
-        # Unfortunately MyPy doesn't seem to support ParamSpec here yet so using '...' instead.
-        self._endpoint: Optional[Callable[..., R]] = None
+        self._endpoint: Optional[Endpoint] = None
 
-    def set_endpoint(self, endpoint: Callable[..., R]) -> None:
+    def set_endpoint(self, endpoint: Endpoint) -> None:
         self._endpoint = endpoint
 
-    def get_endpoint(self) -> Callable[..., R]:
+    def get_endpoint(self) -> Endpoint:
         if not self._endpoint:
             raise ValueError("No endpoint set!")
 

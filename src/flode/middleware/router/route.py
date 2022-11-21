@@ -1,4 +1,4 @@
-from typing import ParamSpec, TypeVar, Callable, List, Optional
+from typing import ParamSpec, TypeVar, Callable, List, Optional, Any
 
 from flode.http_method import HttpMethod
 from flode.middleware.endpoint.endpoint_result import EndpointResult
@@ -19,6 +19,10 @@ class Route:
     def __call__(self, method: Callable[P, R]) -> Callable[P, R]:
         setattr(method, self.ROUTE_ATTR, self)
         return method
+
+    def __eq__(self, other: Any) -> bool:
+        return isinstance(other, Route) and other._pattern == self._pattern \
+               and other._http_methods == self._http_methods
 
     @property
     def pattern(self) -> RoutePattern:

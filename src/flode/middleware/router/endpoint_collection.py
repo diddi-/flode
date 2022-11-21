@@ -1,16 +1,16 @@
 from typing import List
 
 from flode.http_method import HttpMethod
-from flode.middleware.endpoint.class_endpoint import ClassEndpoint
+from flode.middleware.endpoint.endpoint import Endpoint
 from flode.middleware.router.route_pattern import RoutePattern
 from flode.middleware.router.url_path import UrlPath
 
 
 class EndpointCollection:
     def __init__(self) -> None:
-        self._endpoints: List[ClassEndpoint] = []
+        self._endpoints: List[Endpoint] = []
 
-    def add(self, endpoint: ClassEndpoint) -> None:
+    def add(self, endpoint: Endpoint) -> None:
         self._endpoints.append(endpoint)
 
     def get_all_routes(self) -> List[RoutePattern]:
@@ -27,7 +27,7 @@ class EndpointCollection:
         except ValueError:
             return False
 
-    def get_endpoint(self, path: UrlPath, http_method: HttpMethod) -> ClassEndpoint:
+    def get_endpoint(self, path: UrlPath, http_method: HttpMethod) -> Endpoint:
         for endpoint in self._endpoints:
             if endpoint.route.pattern.matches(path) and http_method in endpoint.route.http_methods:
                 return endpoint
