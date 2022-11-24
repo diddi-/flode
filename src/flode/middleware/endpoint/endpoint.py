@@ -1,10 +1,11 @@
 from __future__ import annotations
-from typing import Callable, TypeVar, ParamSpec
+from typing import Callable, TypeVar, ParamSpec, Any
 
+from flode.middleware.endpoint.endpoint_result import EndpointResult
 from flode.middleware.router.route import Route
 
 P = ParamSpec("P")
-R = TypeVar("R")
+R = TypeVar("R", bound=EndpointResult)
 
 
 class Endpoint:
@@ -12,5 +13,5 @@ class Endpoint:
         self.fn = fn
         self.route = route
 
-    def __eq__(self, other: Endpoint) -> bool:
+    def __eq__(self, other: Any) -> bool:
         return isinstance(other, Endpoint) and other.fn == self.fn and other.route == self.route

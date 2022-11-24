@@ -1,11 +1,11 @@
 from inspect import signature
-from typing import cast, Callable, Dict
+from typing import Dict
 
 from flode.di.container import Container
 from flode.di.exceptions.missing_dependency_exception import MissingDependencyException
+from flode.http_context import HttpContext
 from flode.middleware.endpoint.endpoint import Endpoint
 from flode.middleware.endpoint.endpoint_result import EndpointResult
-from flode.http_context import HttpContext
 from flode.middleware.middleware import Middleware
 from flode.middleware.no_options import NoOptions
 from flode.middleware.router.placeholder.string_placeholder import StringPlaceholder
