@@ -66,20 +66,39 @@ class TestWsgiApp(TestCase):
         response = client.get("/status")
         self.assertEqual(MyService.message, response.body)
 
-    def test_path_placeholders_can_be_injected_to_endpoint(self) -> None:
-        expected_uid = 123
+    def test_simple_placeholders_can_be_injected_to_endpoint(self) -> None:
+        expected_name = "admin"
 
-        class ProfileController:
-            @Route("/user/<uid: int>/profile")
-            def default_status(self, uid: int) -> EndpointResult:
-                return EndpointResult(str(uid))
+        class ProfileEndpointGroup:
+            @Route("/user/<name>/profile")
+            def get_name(self, name: str) -> EndpointResult:
+                return EndpointResult(name)
 
         builder = AppBuilder()
         with builder.add_routing() as opts:
-            opts.add_endpoint("/", ProfileController)
+            opts.add_endpoint("/", ProfileEndpointGroup)
 
         app = builder.build()
 
         client = WsgiTestClient(app)
-        response = client.get("/status")
+        response = client.get(f"/user/{expected_name}/profile")
+        self.assertEqual(HttpStatus.OK, response.status)
+        self.assertEqual(expected_name, response.body)
+
+    def test_path_placeholders_with_validators_can_be_injected_to_endpoint(self) -> None:
+        expected_uid = "123"
+
+        class ProfileEndpointGroup:
+            @Route("/user/<uid: int>/profile")
+            def get_uid(self, uid: int) -> EndpointResult:
+                return EndpointResult(str(uid))
+
+        builder = AppBuilder()
+        with builder.add_routing() as opts:
+            opts.add_endpoint("/", ProfileEndpointGroup)
+
+        app = builder.build()
+
+        client = WsgiTestClient(app)
+        response = client.get("/user/123/profile")
         self.assertEqual(expected_uid, response.body)

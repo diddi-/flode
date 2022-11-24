@@ -6,6 +6,11 @@
 An endpoint is responsible for receiving and handle a http request and return a response.
 This is the actual user method that handles the request.
 
+**Endpoint group**
+
+As the name suggests, these are groups of endpoints. It is typically a class with one or more
+endpoint methods. 
+
 **Controller**
 
 Controllers should *not* be used within this project.

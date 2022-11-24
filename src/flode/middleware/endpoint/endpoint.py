@@ -6,6 +6,7 @@ from flode.middleware.router.route import Route
 P = ParamSpec("P")
 R = TypeVar("R")
 
+
 class Endpoint:
     def __init__(self, fn: Callable[P, R], route: Route):
         self.fn = fn

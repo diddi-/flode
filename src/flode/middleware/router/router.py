@@ -36,8 +36,8 @@ class Router(Middleware[RouterOptions]):
     def add_endpoint(self, route_pattern: str, cls: Type[object]) -> None:
         self._container.register(cls, lifetime=Lifetime.SINGLETON)
         base_route_pattern = RoutePattern(route_pattern)
-        controller = self._container.get_service(cls)
-        for name, member in inspect.getmembers(controller):
+        epg = self._container.get_service(cls)
+        for name, member in inspect.getmembers(epg):
             if inspect.isroutine(member) and hasattr(member, Route.ROUTE_ATTR):
                 route = cast(Route, getattr(member, Route.ROUTE_ATTR))
                 full_path = base_route_pattern + route.pattern
